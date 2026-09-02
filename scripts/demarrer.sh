@@ -55,37 +55,50 @@ if ! command -v cloudflared > /dev/null 2>&1; then
   exit 1
 fi
 
-# `pkill -x` cible le programme par son nom exact : aucun risque d'emporter
-# au passage un shell dont la ligne de commande contiendrait le même texte.
-pkill -x cloudflared > /dev/null 2>&1 && sleep 2
-
-# --protocol http2 : par défaut cloudflared utilise QUIC (UDP), que les
-# réseaux mobiles filtrent souvent. Le tunnel obtient alors bien une adresse
-# mais ne s'enregistre jamais, et Cloudflare répond 530.
-echo "→ Ouverture du tunnel (HTTP/2)…"
-nohup cloudflared tunnel --protocol http2 --url "http://localhost:$PORT" > "$TUNNEL_LOG" 2>&1 &
-echo $! > "$TUNNEL_PID"
-
+# Un tunnel déjà actif et fonctionnel est conservé tel quel : le redémarrer
+# changerait l'adresse publique, qui a peut-être déjà été partagée. Pour en
+# obtenir volontairement une nouvelle : bash scripts/arreter.sh d'abord.
 URL=""
-for _ in $(seq 1 40); do
-  sleep 2
-  URL="$(grep -o 'https://[a-z0-9-]*\.trycloudflare\.com' "$TUNNEL_LOG" 2>/dev/null | tail -1)"
-  if [ -n "$URL" ] && grep -q "Registered tunnel connection" "$TUNNEL_LOG" 2>/dev/null; then
-    break
+URL_ACTUELLE="$(grep -o 'https://[a-z0-9-]*\.trycloudflare\.com' "$TUNNEL_LOG" 2>/dev/null | tail -1)"
+if pgrep -x cloudflared > /dev/null 2>&1 && [ -n "$URL_ACTUELLE" ]; then
+  if [ "$(curl -s -o /dev/null --max-time 15 -w '%{http_code}' "$URL_ACTUELLE/fr" 2>/dev/null)" = "200" ]; then
+    echo "→ Tunnel déjà actif : adresse conservée."
+    URL="$URL_ACTUELLE"
   fi
-done
-
-if [ -z "$URL" ]; then
-  echo "✗ Aucune adresse obtenue. Dernières lignes du journal :"
-  tail -15 "$TUNNEL_LOG"
-  exit 1
 fi
 
-if ! grep -q "Registered tunnel connection" "$TUNNEL_LOG" 2>/dev/null; then
-  echo "✗ Adresse obtenue ($URL) mais le tunnel ne s'est pas enregistré."
-  echo "  Réseau instable : réessayez, de préférence en Wi-Fi."
-  tail -15 "$TUNNEL_LOG"
-  exit 1
+if [ -z "$URL" ]; then
+  # `pkill -x` cible le programme par son nom exact : aucun risque d'emporter
+  # au passage un shell dont la ligne de commande contiendrait le même texte.
+  pkill -x cloudflared > /dev/null 2>&1 && sleep 2
+
+  # --protocol http2 : par défaut cloudflared utilise QUIC (UDP), que les
+  # réseaux mobiles filtrent souvent. Le tunnel obtient alors bien une adresse
+  # mais ne s'enregistre jamais, et Cloudflare répond 530.
+  echo "→ Ouverture du tunnel (HTTP/2)…"
+  nohup cloudflared tunnel --protocol http2 --url "http://localhost:$PORT" > "$TUNNEL_LOG" 2>&1 &
+  echo $! > "$TUNNEL_PID"
+
+  for _ in $(seq 1 40); do
+    sleep 2
+    URL="$(grep -o 'https://[a-z0-9-]*\.trycloudflare\.com' "$TUNNEL_LOG" 2>/dev/null | tail -1)"
+    if [ -n "$URL" ] && grep -q "Registered tunnel connection" "$TUNNEL_LOG" 2>/dev/null; then
+      break
+    fi
+  done
+
+  if [ -z "$URL" ]; then
+    echo "✗ Aucune adresse obtenue. Dernières lignes du journal :"
+    tail -15 "$TUNNEL_LOG"
+    exit 1
+  fi
+
+  if ! grep -q "Registered tunnel connection" "$TUNNEL_LOG" 2>/dev/null; then
+    echo "✗ Adresse obtenue ($URL) mais le tunnel ne s'est pas enregistré."
+    echo "  Réseau instable : réessayez, de préférence en Wi-Fi."
+    tail -15 "$TUNNEL_LOG"
+    exit 1
+  fi
 fi
 
 # ------------------------------------------------------------ vérification

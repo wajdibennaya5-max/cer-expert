@@ -205,6 +205,19 @@ sans ambiguïté :
 
 Pour tout arrêter : `bash scripts/arreter.sh`
 
+**L'adresse ne change pas tant que le tunnel tourne.** Relancer
+`demarrer.sh` conserve un tunnel déjà fonctionnel — pratique pour redémarrer
+le site sans perdre l'adresse déjà partagée :
+
+```bash
+kill $(cat .site.pid)   # arrête le site, garde le tunnel
+rm -rf data             # facultatif : repartir sur des données vierges
+bash scripts/demarrer.sh
+```
+
+Seul `arreter.sh` coupe le tunnel — et donc change l'adresse au prochain
+démarrage.
+
 Cloudflare affiche au bout de quelques secondes une adresse du type :
 
 ```
