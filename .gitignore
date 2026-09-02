@@ -31,3 +31,4 @@ yarn-error.log*
 .tunnel.pid
 site.log
 tunnel.log
+tunnel.conf

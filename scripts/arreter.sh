@@ -15,4 +15,5 @@ arreter() { # $1 = fichier de PID, $2 = libellé
 arreter "$PROJECT/.tunnel.pid" "tunnel"
 arreter "$PROJECT/.site.pid" "site"
 # Filet de sécurité : `-x` cible le programme par son nom exact.
-pkill -x cloudflared > /dev/null 2>&1 && echo "→ Tunnel résiduel arrêté."
+pkill -x cloudflared > /dev/null 2>&1 && echo "→ Tunnel Cloudflare résiduel arrêté."
+pkill -x ngrok > /dev/null 2>&1 && echo "→ Tunnel ngrok résiduel arrêté."

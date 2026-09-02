@@ -237,6 +237,57 @@ Reportez-la dans `.env.local` (`NEXT_PUBLIC_SITE_URL`), puis relancez
 
 ---
 
+## Étape 7 bis — Une adresse fixe avec ngrok (facultatif)
+
+L'adresse Cloudflare gratuite change à chaque ouverture de tunnel. ngrok offre
+**une adresse fixe gratuite** par compte, du type
+`votre-nom.ngrok-free.app` — elle ne change plus jamais.
+
+> **Le défaut, dit franchement :** sur l'offre gratuite, ngrok affiche une page
+> d'avertissement avant votre site à la première visite d'un navigateur. Le
+> visiteur doit cliquer pour continuer. C'est acceptable pour tester et faire
+> voir le site ; c'est un frein réel pour un client pressé. Une adresse fixe
+> sans cette page suppose un nom de domaine à vous (voir README.md).
+
+### 1. Le compte et l'adresse
+
+Sur **ngrok.com**, créez un compte gratuit. Depuis le tableau de bord :
+
+- **Your Authtoken** → copiez le jeton ;
+- **Domains** → créez votre domaine gratuit, en choisissant le sous-domaine
+  (`wajdi-tayssir` par exemple).
+
+### 2. L'installation, dans Ubuntu
+
+ngrok se distribue par dépôt apt — pas de lien de téléchargement à deviner :
+
+```bash
+curl -sSLo /usr/share/keyrings/ngrok.asc https://ngrok-agent.s3.amazonaws.com/ngrok.asc
+echo "deb [signed-by=/usr/share/keyrings/ngrok.asc] https://ngrok-agent.s3.amazonaws.com bookworm main" > /etc/apt/sources.list.d/ngrok.list
+apt update
+apt install -y ngrok
+```
+
+Puis enregistrez votre jeton (remplacez la fin par le vôtre) :
+
+```bash
+ngrok config add-authtoken VOTRE_JETON
+```
+
+### 3. Indiquer l'adresse au script
+
+Un fichier `tunnel.conf` à la racine du projet suffit — en remplaçant le
+domaine par le vôtre :
+
+```bash
+cd ~/wajdi-tayssir
+echo "NGROK_DOMAIN=wajdi-tayssir.ngrok-free.app" > tunnel.conf
+```
+
+À partir de là, `bash scripts/demarrer.sh` utilise ngrok et votre adresse fixe.
+Sans ce fichier, il retombe automatiquement sur Cloudflare. Le fichier n'est
+pas versionné : il reste propre à votre téléphone.
+
 ## Étape 8 — Empêcher Android d'éteindre le site
 
 Dans Termux (pas dans Ubuntu), tapez :
