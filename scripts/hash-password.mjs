@@ -16,4 +16,6 @@ if (password.length < 10) {
 }
 const salt = randomBytes(16);
 const derived = scryptSync(password, salt, 64);
-console.log(`ADMIN_PASSWORD_HASH=scrypt$${salt.toString("hex")}$${derived.toString("hex")}`);
+// Séparateur « : » et non « $ » : dans un fichier .env, Next.js remplacerait
+// « $sel » par une variable d'environnement inexistante, donc par du vide.
+console.log(`ADMIN_PASSWORD_HASH=scrypt:${salt.toString("hex")}:${derived.toString("hex")}`);

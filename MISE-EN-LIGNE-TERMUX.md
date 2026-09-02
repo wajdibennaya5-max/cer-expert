@@ -43,6 +43,33 @@ y fonctionne normalement.
 
 ---
 
+## Raccourci : tout faire en une commande
+
+Si Ubuntu est déjà installé (étapes 1 et 2 ci-dessous), le reste tient en une
+ligne. Le script n'exécute que ce qui manque, et se relance sans risque :
+
+```bash
+cd ~/wajdi-tayssir && bash scripts/installer.sh
+```
+
+Il vérifie Node.js, installe les dépendances, vous demande **un mot de passe
+d'administration et votre e-mail**, construit le site et le met en ligne.
+
+Pour une adresse fixe ngrok, une ligne également :
+
+```bash
+cd ~/wajdi-tayssir && bash scripts/ngrok.sh
+```
+
+Il installe ngrok, vous demande votre jeton — **qui ne s'affiche pas et
+n'entre pas dans l'historique du terminal** — puis votre domaine, et publie
+le site.
+
+Les étapes détaillées ci-dessous restent utiles pour comprendre ce que font
+ces scripts, ou pour reprendre la main si l'un d'eux s'arrête.
+
+---
+
 ## Étape 1 — Préparer Termux
 
 Installez Termux depuis **F-Droid** (la version du Play Store est abandonnée et

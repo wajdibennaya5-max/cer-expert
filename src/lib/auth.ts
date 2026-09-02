@@ -75,15 +75,25 @@ function verifyToken(token: string | undefined): SessionPayload | null {
 
 /* ------------------------------------------------------------------ mots de passe */
 
-/** Format stocké : `scrypt$<sel hex>$<empreinte hex>`. */
+/**
+ * Format stocké : `scrypt:<sel hex>:<empreinte hex>`.
+ *
+ * Le séparateur est un deux-points, jamais un dollar : le lecteur de fichiers
+ * `.env` de Next.js interprète `$xxx` comme une variable à substituer. Une
+ * empreinte contenant des dollars était donc tronquée au chargement — et
+ * seulement quand le sel commençait par une lettre, ce qui rendait la panne
+ * intermittente et incompréhensible.
+ */
 export function hashPassword(password: string): string {
   const salt = randomBytes(16);
   const derived = scryptSync(password, salt, 64);
-  return `scrypt$${salt.toString("hex")}$${derived.toString("hex")}`;
+  return `scrypt:${salt.toString("hex")}:${derived.toString("hex")}`;
 }
 
 export function verifyPassword(password: string, stored: string): boolean {
-  const parts = stored.split("$");
+  // Les empreintes générées avant la correction utilisent « $ » : elles
+  // restent acceptées, personne n'a à refaire son mot de passe sans raison.
+  const parts = stored.includes(":") ? stored.split(":") : stored.split("$");
   if (parts.length !== 3 || parts[0] !== "scrypt") return false;
   try {
     const salt = Buffer.from(parts[1]!, "hex");
