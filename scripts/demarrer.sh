@@ -89,7 +89,15 @@ if ! grep -q "Registered tunnel connection" "$TUNNEL_LOG" 2>/dev/null; then
 fi
 
 # ------------------------------------------------------------ vérification
-CODE="$(curl -s -o /dev/null --max-time 25 -w '%{http_code}' "$URL/fr" 2>/dev/null || echo 000)"
+# Cloudflare prévient qu'une adresse fraîchement créée met un moment à devenir
+# joignable : on réessaie plutôt que de conclure trop vite.
+CODE="000"
+for _ in $(seq 1 6); do
+  CODE="$(curl -s -o /dev/null --max-time 20 -w '%{http_code}' "$URL/fr" 2>/dev/null)"
+  [ -z "$CODE" ] && CODE="000"
+  [ "$CODE" = "200" ] && break
+  sleep 8
+done
 
 echo
 echo "  ────────────────────────────────────────────────────"
@@ -100,6 +108,9 @@ case "$CODE" in
   200) echo "   ✅ Le site est accessible depuis Internet." ;;
   502|503) echo "   ⚠️  Tunnel actif, mais le site ne répond pas." ;;
   530) echo "   ⚠️  Cloudflare ne joint pas le tunnel. Réseau instable." ;;
+  000) echo "   ⚠️  Aucune réponse. L'adresse peut mettre une minute de plus" ;
+       echo "       à devenir joignable — retentez le test dans un instant :" ;
+       echo "       curl -s -o /dev/null -w '%{http_code}\n' $URL/fr" ;;
   *) echo "   ⚠️  Réponse inattendue. Journal : tail -30 tunnel.log" ;;
 esac
 echo
