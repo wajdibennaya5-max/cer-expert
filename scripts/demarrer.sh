@@ -4,12 +4,15 @@
 #
 #   bash scripts/demarrer.sh
 #
-# Deux tunnels possibles :
+# Trois tunnels possibles, choisis d'après `tunnel.conf` à la racine :
 #
-#   • ngrok, avec une adresse FIXE — si le fichier `tunnel.conf` existe à la
-#     racine du projet et contient :  NGROK_DOMAIN=votre-domaine.ngrok-free.app
-#   • Cloudflare, sinon : aucune configuration, mais l'adresse change à chaque
-#     ouverture de tunnel.
+#   • Cloudflare nommé, sur VOTRE domaine — le meilleur : adresse définitive,
+#     gratuite, sans page d'avertissement. Se configure avec scripts/domaine.sh
+#     et pose  CF_TUNNEL_NAME=…  et  CF_HOSTNAME=…
+#   • ngrok, adresse fixe mais en .ngrok-free.app, avec une page intermédiaire
+#     avant le site. Se configure avec scripts/ngrok.sh et pose  NGROK_DOMAIN=…
+#   • Cloudflare temporaire, sinon : rien à configurer, mais l'adresse change à
+#     chaque ouverture de tunnel.
 #
 # Écrit pour un téléphone : rien à remplacer dans les commandes, chaque étape
 # est attendue jusqu'à être réellement prête, et le résultat est vérifié depuis
@@ -112,6 +115,41 @@ demarrer_ngrok() {
   return 0
 }
 
+# ----------------------------------- tunnel Cloudflare nommé (votre domaine)
+demarrer_cloudflared_nomme() {
+  if ! command -v cloudflared > /dev/null 2>&1; then
+    echo "✗ cloudflared n'est pas installé. Lancez : bash scripts/domaine.sh"
+    exit 1
+  fi
+
+  URL="https://$CF_HOSTNAME"
+
+  if pgrep -x cloudflared > /dev/null 2>&1 && [ "$(tester "$URL")" = "200" ]; then
+    echo "→ Tunnel déjà actif sur $CF_HOSTNAME."
+    return 0
+  fi
+
+  pkill -x cloudflared > /dev/null 2>&1 && sleep 2
+  echo "→ Ouverture du tunnel « $CF_TUNNEL_NAME » vers $CF_HOSTNAME…"
+
+  # --protocol http2 : comme pour le tunnel temporaire, QUIC (UDP) est filtré
+  # par la plupart des réseaux mobiles tunisiens.
+  nohup cloudflared tunnel --protocol http2 run \
+    --url "http://localhost:$PORT" "$CF_TUNNEL_NAME" > "$TUNNEL_LOG" 2>&1 &
+  echo $! > "$TUNNEL_PID"
+
+  for _ in $(seq 1 30); do
+    sleep 3
+    [ "$(tester "$URL")" = "200" ] && return 0
+    if grep -q "tunnel credentials file" "$TUNNEL_LOG" 2>/dev/null; then
+      echo "✗ Identifiants du tunnel introuvables sur ce téléphone."
+      echo "  Relancez la configuration : bash scripts/domaine.sh"
+      exit 1
+    fi
+  done
+  return 0
+}
+
 # ------------------------------------------- tunnel Cloudflare (temporaire)
 demarrer_cloudflared() {
   if ! command -v cloudflared > /dev/null 2>&1; then
@@ -161,10 +199,14 @@ demarrer_cloudflared() {
 
 # ---------------------------------------------------------------- le tunnel
 NGROK_DOMAIN=""
+CF_TUNNEL_NAME=""
+CF_HOSTNAME=""
 # shellcheck disable=SC1091
 [ -f "$PROJECT/tunnel.conf" ] && . "$PROJECT/tunnel.conf"
 
-if [ -n "$NGROK_DOMAIN" ]; then
+if [ -n "$CF_TUNNEL_NAME" ] && [ -n "$CF_HOSTNAME" ]; then
+  demarrer_cloudflared_nomme
+elif [ -n "$NGROK_DOMAIN" ]; then
   demarrer_ngrok
 else
   demarrer_cloudflared
@@ -189,6 +231,8 @@ case "$CODE" in
   200) echo "   ✅ Le site est accessible depuis Internet." ;;
   502|503) echo "   ⚠️  Tunnel actif, mais le site ne répond pas." ;;
   530) echo "   ⚠️  Cloudflare ne joint pas le tunnel. Réseau instable." ;;
+  404) echo "   ⚠️  Le domaine ne pointe pas encore vers ce tunnel." ;
+       echo "       Relancez : bash scripts/domaine.sh" ;;
   000) echo "   ⚠️  Aucune réponse. L'adresse met parfois une minute de plus" ;
        echo "       à devenir joignable — retentez dans un instant :" ;
        echo "       curl -s -o /dev/null -w '%{http_code}\n' $URL/fr" ;;

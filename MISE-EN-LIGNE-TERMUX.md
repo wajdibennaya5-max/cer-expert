@@ -257,10 +257,10 @@ HTTPS, gratuitement.
 Reportez-la dans `.env.local` (`NEXT_PUBLIC_SITE_URL`), puis relancez
 `npm run build` et `npm start` dans la première session.
 
-> Cette adresse gratuite **change à chaque redémarrage du tunnel**. Pour une
-> adresse stable ou votre propre nom de domaine, il faut un compte Cloudflare
-> (gratuit) et un « tunnel nommé » : `cloudflared tunnel login`, puis
-> `cloudflared tunnel create wajdi-tayssir`. Cloudflare documente la suite.
+> Cette adresse gratuite **change à chaque redémarrage du tunnel**. Deux
+> solutions pour une adresse qui ne bouge plus : ngrok (étape 7 bis, gratuit
+> mais avec une page d'avertissement) ou votre propre nom de domaine
+> (étape 7 ter — c'est la bonne solution si le site doit servir vraiment).
 
 ---
 
@@ -274,7 +274,7 @@ L'adresse Cloudflare gratuite change à chaque ouverture de tunnel. ngrok offre
 > d'avertissement avant votre site à la première visite d'un navigateur. Le
 > visiteur doit cliquer pour continuer. C'est acceptable pour tester et faire
 > voir le site ; c'est un frein réel pour un client pressé. Une adresse fixe
-> sans cette page suppose un nom de domaine à vous (voir README.md).
+> sans cette page suppose un nom de domaine à vous — c'est l'étape 7 ter.
 
 ### 1. Le compte et l'adresse
 
@@ -314,6 +314,85 @@ echo "NGROK_DOMAIN=wajdi-tayssir.ngrok-free.app" > tunnel.conf
 À partir de là, `bash scripts/demarrer.sh` utilise ngrok et votre adresse fixe.
 Sans ce fichier, il retombe automatiquement sur Cloudflare. Le fichier n'est
 pas versionné : il reste propre à votre téléphone.
+
+## Étape 7 ter — Votre propre domaine (recommandé)
+
+C'est la seule option qui donne une **vraie** adresse professionnelle :
+`https://wajdi-tayssir-services.com` au lieu d'une adresse prêtée. Pas de page
+d'avertissement, pas de changement d'adresse, et — point décisif — un domaine
+à vous permet enfin de **créer une adresse e-mail professionnelle**, et donc de
+valider votre fiche Google Business Profile par e-mail.
+
+### Ce que ça coûte, honnêtement
+
+| Élément | Prix réel |
+| --- | --- |
+| Le nom de domaine `.com` | ~12 € / an (~40 TND), chez n'importe quel registrar |
+| Le compte Cloudflare | gratuit |
+| Le tunnel (adresse fixe, HTTPS) | gratuit, sans limite de durée |
+| L'e-mail `contact@votredomaine.com` | gratuit (Cloudflare Email Routing, redirigé vers votre Gmail) |
+
+Le domaine est la seule dépense, et elle est incontournable : **personne ne
+donne gratuitement un nom de domaine que vous possédez vraiment.** Les
+« domaines gratuits » d'autrefois (Freenom) n'existent plus.
+
+### 1. Acheter le domaine
+
+Chez Cloudflare Registrar, Namecheap, OVH, Porkbun — peu importe. Prenez un nom
+court et lisible au téléphone.
+
+> Un `.tn` exige un dossier auprès du registre tunisien et un justificatif
+> d'activité. Un `.com` s'obtient en cinq minutes avec une carte bancaire :
+> commencez par là.
+
+### 2. Ajouter le domaine à Cloudflare
+
+Sur **dash.cloudflare.com** → *Add a site* → votre domaine → plan **Free**.
+Cloudflare vous donne deux serveurs de noms ; reportez-les chez le registrar où
+vous avez acheté le domaine, à la place des siens. La bascule prend de quelques
+minutes à quelques heures.
+
+### 3. Tout le reste, en une commande
+
+Dans Ubuntu, sur le téléphone :
+
+```bash
+cd ~/wajdi-tayssir && git pull && bash scripts/domaine.sh
+```
+
+Le script installe `cloudflared` si besoin, vous demande votre domaine, affiche
+**un lien à ouvrir** pour autoriser le téléphone sur votre compte Cloudflare,
+crée le tunnel nommé, fait pointer le domaine et le `www` dessus, puis démarre
+le site et vérifie qu'il répond depuis Internet.
+
+Ensuite, le démarrage habituel suffit — l'adresse est retenue :
+
+```bash
+bash scripts/demarrer.sh
+```
+
+### 4. L'e-mail professionnel, gratuit
+
+Sur **dash.cloudflare.com** → votre domaine → **Email** → **Email Routing** →
+*Get started*. Créez `contact@votredomaine.com` et faites-le suivre vers votre
+Gmail. Cloudflare ajoute les enregistrements MX tout seul.
+
+À partir de là, un message envoyé à `contact@votredomaine.com` arrive dans votre
+boîte Gmail habituelle — y compris le code à 5 chiffres de Google.
+
+> **Limite honnête :** Email Routing *reçoit* et redirige, il n'*envoie* pas.
+> Pour répondre depuis `contact@votredomaine.com`, il faut configurer un envoi
+> SMTP (Gmail « Envoyer des e-mails en tant que », avec un service comme Resend
+> ou Brevo, qui ont tous deux une offre gratuite limitée).
+
+### 5. Valider la fiche Google
+
+Dans Google Business Profile, mettez `https://votredomaine.com` comme site web,
+puis relancez la validation. Google proposera cette fois une adresse e-mail
+**sur votre domaine** — celle que vous venez de créer. Le code arrive dans votre
+Gmail.
+
+---
 
 ## Étape 8 — Empêcher Android d'éteindre le site
 

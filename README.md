@@ -369,6 +369,20 @@ Possible, et documenté pas à pas dans **[MISE-EN-LIGNE-TERMUX.md](./MISE-EN-LI
 extérieur). À réserver aux essais et aux démonstrations : un téléphone
 s'éteint, chauffe et voit ses processus arrêtés par Android.
 
+Trois scripts couvrent les trois qualités d'adresse publique, du plus simple au
+plus professionnel :
+
+| Commande | Adresse obtenue | Coût |
+| --- | --- | --- |
+| `bash scripts/demarrer.sh` | `xxx.trycloudflare.com`, **change à chaque redémarrage** | gratuit |
+| `bash scripts/ngrok.sh` | `vous.ngrok-free.app`, fixe, mais page d'avertissement avant le site | gratuit |
+| `bash scripts/domaine.sh` | `https://votredomaine.com`, fixe et sans intermédiaire | le domaine seul (~40 DT/an) |
+
+Seul le troisième donne un domaine que vous possédez — donc la possibilité de
+créer `contact@votredomaine.com` (Cloudflare Email Routing, gratuit) et de
+valider une fiche Google Business Profile par e-mail. Les adresses prêtées par
+Cloudflare ou ngrok n'acceptent aucun e-mail : elles ne servent que le web.
+
 ### Option « niveau gratuit » — Vercel, Netlify, Cloudflare
 
 Le déploiement est immédiat (import du dépôt Git, aucune configuration), et le
