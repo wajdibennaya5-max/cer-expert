@@ -359,6 +359,34 @@ ou plus. Vérifiez toujours les deux chiffres avant de payer.
 > Depuis la Tunisie, le paiement international demande une carte ouverte à
 > l'étranger (« carte technologique ») ou un compte PayPal.
 
+### 1 bis. Sans budget du tout : un domaine `.eu.org` gratuit
+
+**nic.eu.org** attribue gratuitement et définitivement des domaines du type
+`wajdi-tayssir.eu.org`. Ce n'est pas une adresse prêtée comme
+`trycloudflare.com` : vous en contrôlez les serveurs de noms, donc le tunnel
+nommé **et** l'e-mail fonctionnent exactement pareil.
+
+L'ordre des opérations compte, sinon la demande est refusée :
+
+1. Sur **dash.cloudflare.com** → *Add a site* → tapez `wajdi-tayssir.eu.org`
+   (le nom que vous visez) → plan **Free**. Cloudflare accepte ce domaine
+   comme un domaine racine, `eu.org` figurant dans la Public Suffix List.
+   Notez les **deux serveurs de noms** qu'il vous donne.
+2. Sur **nic.eu.org** → créez un compte → *New domain request* → indiquez ces
+   deux serveurs de noms dans le formulaire.
+3. Attendez la validation.
+
+> **Les limites, dites franchement :** le service est tenu par des bénévoles.
+> La validation prend de **quelques jours à plusieurs semaines**, et elle est
+> manuelle — une demande peut être refusée sans recours. Le service vise en
+> priorité les demandeurs liés à l'Europe ; ce n'est pas strictement appliqué,
+> mais ce n'est pas garanti non plus. Enfin, `.eu.org` inspire moins confiance
+> à un client qu'un `.com`. C'est une solution d'attente honnête, pas une
+> solution définitive pour une entreprise qui tourne.
+
+Une fois le domaine validé, la suite est identique : `bash scripts/domaine.sh`,
+puis Email Routing.
+
 ### 2. Ajouter le domaine à Cloudflare
 
 Sur **dash.cloudflare.com** → *Add a site* → votre domaine → plan **Free**.
