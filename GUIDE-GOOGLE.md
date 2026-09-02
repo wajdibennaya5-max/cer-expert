@@ -1,11 +1,86 @@
-# Valider la fiche Google Business Profile par vidéo
+# Valider la fiche Google Business Profile
 
-Ce guide sert quand **le code par SMS ou par appel n'arrive pas** — cas
-fréquent sur les lignes tunisiennes — et quand la validation par e-mail est
-impossible faute de nom de domaine.
+Deux voies gratuites existent quand le code par SMS n'arrive pas : **la vidéo**
+(immédiate, détaillée plus bas) et **l'e-mail** (qui suppose un nom de domaine).
 
-La validation par vidéo est **gratuite**, ne demande aucun achat, et fonctionne
-pour un artisan qui se déplace chez ses clients, sans local commercial.
+- [Valider par e-mail](#valider-par-e-mail) — ce qu'il faut réunir d'abord
+- [Valider par vidéo](#valider-par-vidéo) — sans rien acheter, sous 5 jours
+
+---
+
+## Valider par e-mail
+
+### Pourquoi un domaine est obligatoire
+
+Google n'envoie **jamais** le code sur une adresse Gmail. La méthode sert à
+prouver que le site web vous appartient : le code part donc vers une adresse
+**du domaine renseigné dans le champ « Site Web »** de la fiche.
+
+| Site web renseigné | Adresse choisie par Google | Résultat |
+| --- | --- | --- |
+| `xxx.trycloudflare.com` | `…@xxx.trycloudflare.com` | ❌ boîte impossible : le domaine appartient à Cloudflare |
+| `xxx.ngrok-free.app` | `…@xxx.ngrok-free.app` | ❌ même problème, chez ngrok |
+| `wajdi-tayssir.eu.org` | `…@wajdi-tayssir.eu.org` | ✅ le domaine est à vous |
+| `wajdi-tayssir.com` | `…@wajdi-tayssir.com` | ✅ |
+
+Acheter une « boîte mail à 1 $ » chez un hébergeur ne sert à rien : elle serait
+sur *leur* domaine, pas sur le vôtre. **Une fois le domaine obtenu, l'e-mail est
+gratuit** (Cloudflare Email Routing).
+
+### Les quatre étapes
+
+**1. Obtenir un domaine.** Deux possibilités, et seulement deux :
+
+| | Coût | Délai | Remarque |
+| --- | --- | --- | --- |
+| `.xyz` chez Namecheap ou Porkbun | **~1,18 $** (dont 0,18 $ de taxe ICANN, incompressible) | immédiat | le plancher absolu du marché |
+| `.eu.org` sur [nic.eu.org](https://nic.eu.org/) | **0 $** | **quelques semaines à plusieurs mois** | bénévole, examen manuel, refus possible |
+
+**2. Mettre le domaine sur Cloudflare.** `dash.cloudflare.com` → *Add a site* →
+plan **Free**. Cloudflare donne deux serveurs de noms à déclarer chez le
+vendeur du domaine (ou dans le formulaire eu.org).
+
+**3. Créer l'adresse e-mail, gratuitement.** Cloudflare → votre domaine →
+**Email** → **Email Routing** → *Get started* → créer `contact@votredomaine`
+et le rediriger vers votre Gmail. Cloudflare pose les enregistrements MX seul.
+
+Vérifiez la redirection en vous envoyant un message d'essai **avant** de
+relancer Google : si l'essai n'arrive pas, le code n'arrivera pas non plus.
+
+**4. Relancer Google.** Dans la fiche : *Modifier* → **Site Web** →
+`https://votredomaine` → enregistrer. Puis reprendre la validation et choisir
+**e-mail**. Google proposera cette fois une adresse sur votre domaine ; le code
+à 5 chiffres arrive dans votre Gmail.
+
+### Ordre à respecter pour un `.eu.org`
+
+Le formulaire réclame deux serveurs de noms **avant** d'attribuer le domaine.
+Il faut donc préparer Cloudflare en premier, sinon la demande est rejetée :
+
+1. `dash.cloudflare.com` → *Add a site* → tapez le nom visé
+   (`wajdi-tayssir.eu.org`) → plan **Free** → **notez les deux serveurs de
+   noms**. Cloudflare accepte ce nom comme domaine racine, `eu.org` figurant
+   dans la Public Suffix List. Le tableau de bord affichera « pending » : c'est
+   normal, le domaine n'existe pas encore.
+2. [nic.eu.org](https://nic.eu.org/) → créer un compte (un « contact ») avec
+   des coordonnées **exactes** — nom, adresse, e-mail réels. Attendre l'e-mail
+   de validation du compte, qui demande déjà une intervention humaine.
+3. Une fois connecté : *New domain* → le nom souhaité → renseigner les deux
+   serveurs de noms Cloudflare notés à l'étape 1.
+4. Attendre. Il n'y a rien d'autre à faire, et relancer n'accélère rien.
+
+**Causes de refus connues :** coordonnées inexactes ou fantaisistes, nom
+ressemblant à une marque déposée, moins de 4 caractères, serveurs de noms
+absents ou injoignables.
+
+---
+
+## Valider par vidéo
+
+
+La vidéo est **gratuite**, ne demande aucun achat ni aucun domaine, et elle est
+prévue pour un artisan qui se déplace chez ses clients, sans local commercial.
+C'est la seule voie qui aboutit le jour même quand le SMS n'arrive pas.
 
 > **Réponse de Google : sous 5 jours ouvrés en général.** En cas de refus, on
 > peut refaire une vidéo — le nombre d'essais n'est pas limité.

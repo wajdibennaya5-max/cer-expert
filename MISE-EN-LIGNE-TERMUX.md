@@ -376,13 +376,16 @@ L'ordre des opérations compte, sinon la demande est refusée :
    deux serveurs de noms dans le formulaire.
 3. Attendez la validation.
 
-> **Les limites, dites franchement :** le service est tenu par des bénévoles.
-> La validation prend de **quelques jours à plusieurs semaines**, et elle est
-> manuelle — une demande peut être refusée sans recours. Le service vise en
-> priorité les demandeurs liés à l'Europe ; ce n'est pas strictement appliqué,
-> mais ce n'est pas garanti non plus. Enfin, `.eu.org` inspire moins confiance
-> à un client qu'un `.com`. C'est une solution d'attente honnête, pas une
-> solution définitive pour une entreprise qui tourne.
+> **Les limites, dites franchement :** le service est tenu par des bénévoles et
+> chaque demande est examinée à la main. Le délai est **imprévisible : de
+> quelques semaines à plusieurs mois**, parfois près d'un an. Une demande peut
+> être refusée sans recours. Le service vise en priorité les demandeurs liés à
+> l'Europe ; ce n'est pas strictement appliqué, mais ce n'est pas garanti non
+> plus. Enfin, `.eu.org` inspire moins confiance à un client qu'un `.com`.
+>
+> **Conséquence pratique :** on lance la demande aujourd'hui parce qu'elle ne
+> coûte rien, mais on ne compte pas dessus pour valider une fiche Google cette
+> semaine.
 
 Une fois le domaine validé, la suite est identique : `bash scripts/domaine.sh`,
 puis Email Routing.
