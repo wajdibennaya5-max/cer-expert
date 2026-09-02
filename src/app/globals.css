@@ -1,0 +1,418 @@
+@import "tailwindcss";
+
+/* ============================================================================
+   WAJDI & TAYSSIR SERVICES PRO — système de design
+   Identité : l'eau (bleu profond, cyan) et l'électricité (ambre, or) sur une
+   base « nuit technique ». Deux accents, jamais plus : chaque couleur porte un
+   sens (bleu = plomberie, ambre = électricité), ce qui rend le site lisible
+   avant même d'être lu.
+   ========================================================================== */
+
+@theme {
+  /* Encre — fonds sombres premium */
+  --color-ink-950: #04070f;
+  --color-ink-900: #080d1a;
+  --color-ink-850: #0c1424;
+  --color-ink-800: #111c31;
+  --color-ink-700: #1a2942;
+  --color-ink-600: #26395a;
+
+  /* Eau / technologie */
+  --color-aqua-50: #ecfeff;
+  --color-aqua-100: #cff9fe;
+  --color-aqua-200: #a5f0fc;
+  --color-aqua-300: #67e2f9;
+  --color-aqua-400: #22ccee;
+  --color-aqua-500: #06aad4;
+  --color-aqua-600: #0888ad;
+  --color-aqua-700: #0e6c8c;
+  --color-aqua-800: #155872;
+  --color-aqua-900: #164a61;
+
+  /* Électricité */
+  --color-volt-50: #fffbeb;
+  --color-volt-100: #fef3c7;
+  --color-volt-200: #fde68a;
+  --color-volt-300: #fcd34d;
+  --color-volt-400: #fbbf24;
+  --color-volt-500: #f59e0b;
+  --color-volt-600: #d97706;
+  --color-volt-700: #b45309;
+
+  /* Surfaces claires */
+  --color-mist-50: #f8fafc;
+  --color-mist-100: #f1f5f9;
+  --color-mist-200: #e2e8f0;
+  --color-mist-300: #cbd5e1;
+
+  --font-display: var(--font-sora), "Segoe UI", system-ui, sans-serif;
+  --font-sans: var(--font-inter), system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-arabic: var(--font-cairo), var(--font-inter), system-ui, sans-serif;
+
+  --radius-xl2: 1.5rem;
+  --radius-xl3: 2rem;
+
+  --shadow-glow-aqua: 0 20px 60px -20px rgb(6 170 212 / 0.55);
+  --shadow-glow-volt: 0 20px 60px -20px rgb(245 158 11 / 0.5);
+  --shadow-card: 0 1px 2px rgb(15 23 42 / 0.04), 0 12px 32px -12px rgb(15 23 42 / 0.16);
+  --shadow-card-hover: 0 2px 4px rgb(15 23 42 / 0.06), 0 28px 56px -20px rgb(15 23 42 / 0.28);
+
+  --animate-drift: drift 22s ease-in-out infinite alternate;
+  --animate-pulse-ring: pulse-ring 3.2s ease-out infinite;
+  --animate-spark: spark 3.6s linear infinite;
+  --animate-float: float 7s ease-in-out infinite;
+  --animate-marquee: marquee 38s linear infinite;
+  --animate-rise: rise 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes drift {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(2%, -3%, 0) scale(1.06);
+  }
+  100% {
+    transform: translate3d(-2%, 2%, 0) scale(1.02);
+  }
+}
+@keyframes pulse-ring {
+  0% {
+    transform: scale(0.85);
+    opacity: 0.7;
+  }
+  70% {
+    transform: scale(1.6);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1.6);
+    opacity: 0;
+  }
+}
+@keyframes spark {
+  0% {
+    stroke-dashoffset: 340;
+  }
+  100% {
+    stroke-dashoffset: -340;
+  }
+}
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(22px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes shine {
+  0% {
+    transform: translateX(-120%) skewX(-18deg);
+  }
+  60%,
+  100% {
+    transform: translateX(220%) skewX(-18deg);
+  }
+}
+@keyframes typing {
+  0%,
+  60%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.45;
+  }
+  30% {
+    transform: translateY(-4px);
+    opacity: 1;
+  }
+}
+
+/* --------------------------------------------------------------- base */
+
+@layer base {
+  * {
+    border-color: color-mix(in oklab, var(--color-mist-200) 100%, transparent);
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    background: var(--color-mist-50);
+    color: #0f172a;
+    font-family: var(--font-sans);
+    font-feature-settings: "cv02", "cv03", "cv04";
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    overflow-x: hidden;
+  }
+
+  [dir="rtl"] body {
+    font-family: var(--font-arabic);
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-display);
+    letter-spacing: -0.025em;
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  /* Anneau de focus visible et cohérent partout — accessibilité clavier. */
+  :focus-visible {
+    outline: 3px solid var(--color-aqua-500);
+    outline-offset: 3px;
+    border-radius: 0.35rem;
+  }
+
+  ::selection {
+    background: var(--color-aqua-400);
+    color: var(--color-ink-950);
+  }
+
+  /* Barre de défilement discrète sur les listes internes. */
+  .scroll-thin {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-mist-300) transparent;
+  }
+  .scroll-thin::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  .scroll-thin::-webkit-scrollbar-thumb {
+    background: var(--color-mist-300);
+    border-radius: 999px;
+  }
+}
+
+/* ------------------------------------------------------------ composants */
+
+@layer components {
+  /* Fond « aurore » du héros : trois halos colorés qui dérivent lentement. */
+  .aurora {
+    position: absolute;
+    inset: -20%;
+    pointer-events: none;
+    background:
+      radial-gradient(38% 44% at 18% 26%, rgb(6 170 212 / 0.42) 0%, transparent 62%),
+      radial-gradient(34% 40% at 82% 22%, rgb(245 158 11 / 0.3) 0%, transparent 60%),
+      radial-gradient(46% 50% at 62% 82%, rgb(34 204 238 / 0.24) 0%, transparent 65%);
+    filter: blur(6px);
+    animation: var(--animate-drift);
+  }
+
+  /* Grille technique très discrète : évoque le plan, jamais le papier millimétré. */
+  .tech-grid {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image:
+      linear-gradient(to right, rgb(148 163 184 / 0.09) 1px, transparent 1px),
+      linear-gradient(to bottom, rgb(148 163 184 / 0.09) 1px, transparent 1px);
+    background-size: 56px 56px;
+    mask-image: radial-gradient(ellipse 85% 65% at 50% 35%, #000 40%, transparent 100%);
+  }
+
+  /* Carte de verre sur fond sombre. */
+  .glass {
+    background: linear-gradient(160deg, rgb(255 255 255 / 0.09), rgb(255 255 255 / 0.03));
+    backdrop-filter: blur(14px);
+    border: 1px solid rgb(255 255 255 / 0.12);
+  }
+
+  /* Bordure dégradée 1px (masque), pour les cartes premium. */
+  .gradient-border {
+    position: relative;
+    isolation: isolate;
+  }
+  .gradient-border::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(140deg, var(--color-aqua-400), transparent 45%, var(--color-volt-400));
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    mask-composite: exclude;
+    opacity: 0.55;
+    transition: opacity 0.35s ease;
+    pointer-events: none;
+  }
+  .gradient-border:hover::before {
+    opacity: 1;
+  }
+
+  /* Carte de service : élévation et halo au survol, sans agitation inutile. */
+  .lift {
+    transition:
+      transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+      box-shadow 0.4s ease;
+    will-change: transform;
+  }
+  .lift:hover {
+    transform: translateY(-6px);
+  }
+
+  /* Bouton principal : reflet qui traverse au survol. */
+  .btn-shine {
+    position: relative;
+    overflow: hidden;
+  }
+  .btn-shine::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 42%;
+    background: linear-gradient(90deg, transparent, rgb(255 255 255 / 0.35), transparent);
+    transform: translateX(-120%) skewX(-18deg);
+    pointer-events: none;
+  }
+  .btn-shine:hover::after {
+    animation: shine 0.9s ease-out;
+  }
+
+  /* Apparition à l'entrée dans le viewport (piloté par un IntersectionObserver). */
+  .reveal {
+    opacity: 0;
+    transform: translateY(26px);
+    transition:
+      opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1),
+      transform 0.75s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .reveal.is-visible {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* Indicateur « en train d'écrire » de l'assistant. */
+  .typing span {
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: 999px;
+    background: currentColor;
+    animation: typing 1.2s infinite;
+  }
+  .typing span:nth-child(2) {
+    animation-delay: 0.15s;
+  }
+  .typing span:nth-child(3) {
+    animation-delay: 0.3s;
+  }
+
+  /* Texte dégradé de marque. */
+  .text-gradient {
+    background: linear-gradient(100deg, var(--color-aqua-300), var(--color-aqua-400) 40%, var(--color-volt-300));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  /* Bandeau défilant des zones d'intervention. */
+  .marquee-track {
+    display: flex;
+    width: max-content;
+    animation: var(--animate-marquee);
+  }
+
+  /* Ombre portée intérieure des sections sombres. */
+  .section-dark {
+    background:
+      radial-gradient(60% 80% at 50% 0%, rgb(6 170 212 / 0.12), transparent 70%),
+      linear-gradient(180deg, var(--color-ink-950), var(--color-ink-900));
+    color: #e2e8f0;
+  }
+}
+
+@layer utilities {
+  .container-page {
+    width: 100%;
+    margin-inline: auto;
+    padding-inline: 1.25rem;
+    max-width: 80rem;
+  }
+  @media (min-width: 768px) {
+    .container-page {
+      padding-inline: 2rem;
+    }
+  }
+
+  /* Réserve la place de la barre d'action mobile fixe. */
+  .pb-safe-bar {
+    padding-bottom: calc(5.5rem + env(safe-area-inset-bottom));
+  }
+  @media (min-width: 1024px) {
+    .pb-safe-bar {
+      padding-bottom: 0;
+    }
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
+
+/* Respect strict des préférences système : aucune animation décorative. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+  .reveal {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  body {
+    background: #fff;
+    color: #000;
+  }
+}
