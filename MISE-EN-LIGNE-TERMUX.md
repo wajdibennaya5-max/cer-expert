@@ -166,16 +166,44 @@ gratuitement et sans compte pour un usage temporaire.
 
 ## Étape 7 — Le tunnel Cloudflare
 
+> **Deux pièges rencontrés en conditions réelles**, corrigés ci-dessous.
+> D'abord, aucune commande de ce guide ne contient de texte à remplacer :
+> un `VOTRE_ADRESSE` recopié tel quel produit une erreur incompréhensible.
+> Ensuite, le tunnel est forcé en **HTTP/2** : par défaut cloudflared utilise
+> QUIC, qui passe par UDP. Sur un réseau mobile, le tunnel se crée et obtient
+> bien une adresse, mais ne s'enregistre jamais auprès de Cloudflare — qui
+> répond alors **530**.
+
 Ouvrez une **seconde session Termux** (glissez depuis le bord gauche →
 `NEW SESSION`), puis :
 
 ```bash
 proot-distro login ubuntu
-curl -L https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-arm64 \
-  -o /usr/local/bin/cloudflared
+curl -L https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-arm64 -o /usr/local/bin/cloudflared
 chmod +x /usr/local/bin/cloudflared
-cloudflared tunnel --url http://localhost:3000
 ```
+
+Ensuite, **une seule commande fait tout** :
+
+```bash
+cd ~/wajdi-tayssir
+bash scripts/demarrer.sh
+```
+
+Le script démarre le site s'il ne tourne pas déjà, ouvre le tunnel en HTTP/2,
+**attend qu'il soit réellement enregistré** auprès de Cloudflare, affiche
+l'adresse publique et la teste depuis Internet. Il se termine sur un verdict
+sans ambiguïté :
+
+```
+  ────────────────────────────────────────────────────
+   Adresse du site      : https://xxxx-yyyy.trycloudflare.com
+   Test depuis Internet : HTTP 200
+  ────────────────────────────────────────────────────
+   ✅ Le site est accessible depuis Internet.
+```
+
+Pour tout arrêter : `bash scripts/arreter.sh`
 
 Cloudflare affiche au bout de quelques secondes une adresse du type :
 
@@ -217,19 +245,20 @@ automatiquement au redémarrage du téléphone.
 
 ## Résumé : relancer le site après un redémarrage
 
-Session 1 :
+Trois lignes, et une seule session suffit :
 
 ```bash
 termux-wake-lock
 proot-distro login ubuntu
-cd /root/wajdi-tayssir && npm start
+cd ~/wajdi-tayssir && bash scripts/demarrer.sh
 ```
 
-Session 2 :
+Le site et le tunnel tournent en arrière-plan ; la session reste utilisable.
+Pour revoir leur état :
 
 ```bash
-proot-distro login ubuntu
-cloudflared tunnel --url http://localhost:3000
+tail -20 tunnel.log
+tail -20 site.log
 ```
 
 ---
@@ -275,5 +304,7 @@ site est statique à 90 %.
 | `JavaScript heap out of memory` | Mémoire insuffisante à la construction | `NODE_OPTIONS=--max-old-space-size=2048 npm run build` |
 | `EACCES` / `permission denied` | Écriture hors du dossier autorisé | Restez dans `/root/wajdi-tayssir` |
 | Le site tombe au bout de quelques minutes | Android a mis Termux en veille | `termux-wake-lock` + batterie « sans restriction » |
-| L'adresse Cloudflare ne répond plus | Le tunnel s'est arrêté | Relancez `cloudflared tunnel --url http://localhost:3000` |
+| L'adresse Cloudflare ne répond plus | Le tunnel s'est arrêté | `bash scripts/demarrer.sh` |
+| Erreur **530** | Le tunnel n'est pas enregistré (QUIC bloqué par le réseau mobile) | `bash scripts/demarrer.sh`, qui force HTTP/2 |
+| Erreur **502** ou **503** | Le tunnel fonctionne mais le site est arrêté | `bash scripts/demarrer.sh` le redémarre |
 | `npm ci` très lent ou interrompu | Réseau mobile | Refaites-le en Wi-Fi |
