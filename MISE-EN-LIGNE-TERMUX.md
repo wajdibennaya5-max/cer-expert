@@ -341,9 +341,23 @@ donne gratuitement un nom de domaine que vous possédez vraiment.** Les
 Chez Cloudflare Registrar, Namecheap, OVH, Porkbun — peu importe. Prenez un nom
 court et lisible au téléphone.
 
+**Regardez le prix de renouvellement, pas le prix affiché.** C'est le piège de
+ce marché : une extension vendue 1 $ la première année peut se renouveler 30 $
+ou plus. Vérifiez toujours les deux chiffres avant de payer.
+
+| Extension | 1re année | Renouvellement | Verdict |
+| --- | --- | --- | --- |
+| `.com` (Porkbun, Cloudflare) | ~11 $ | ~11 $, stable | le bon choix pour une entreprise |
+| `.xyz` (Porkbun) | ~2 $ | ~13 $ | correct, prix annoncé honnêtement |
+| `.xyz` (Namecheap) | ~1 $ | plus élevé | acceptable si le budget est nul |
+| `.online` (GoDaddy) | ~2 $ | ~35 $ | à éviter |
+
 > Un `.tn` exige un dossier auprès du registre tunisien et un justificatif
 > d'activité. Un `.com` s'obtient en cinq minutes avec une carte bancaire :
 > commencez par là.
+>
+> Depuis la Tunisie, le paiement international demande une carte ouverte à
+> l'étranger (« carte technologique ») ou un compte PayPal.
 
 ### 2. Ajouter le domaine à Cloudflare
 
