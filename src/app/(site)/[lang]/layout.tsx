@@ -66,17 +66,17 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
       description: dict.meta.home.description,
       url: `${site.url}/${locale}`,
       locale: localeMeta[locale].htmlLang.replace("-", "_"),
-      // Vignette de partage générée par `src/app/opengraph-image.tsx`.
+      // Vignette de partage générée par `src/app/image-partage/route.tsx`.
       // Elle est déclarée explicitement : le site utilisant deux mises en page
       // racines (public et administration), la convention de fichier de Next ne
       // la rattache pas automatiquement aux pages publiques.
-      images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: site.name }],
+      images: [{ url: "/image-partage", width: 1200, height: 630, alt: site.name }],
     },
     twitter: {
       card: "summary_large_image",
       title: dict.meta.home.title,
       description: dict.meta.home.description,
-      images: ["/opengraph-image"],
+      images: ["/image-partage"],
     },
     robots: { index: true, follow: true },
     formatDetection: { telephone: true },

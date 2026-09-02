@@ -7,6 +7,7 @@ const sora = Sora({ subsets: ["latin"], variable: "--font-sora", display: "swap"
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(site.url),
   title: { default: `Administration — ${site.shortName}`, template: `%s — Administration` },
   description: "Console de gestion des demandes d'intervention.",
   robots: { index: false, follow: false, nocache: true },

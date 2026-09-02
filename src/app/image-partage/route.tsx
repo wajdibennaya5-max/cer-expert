@@ -8,12 +8,15 @@ import { site } from "@/lib/site";
  * licence à vérifier. Elle est volontairement identique pour les trois langues —
  * elle porte la marque, le métier et le numéro, c'est-à-dire ce qui compte
  * quand un lien est partagé dans une conversation.
+ *
+ * C'est une route explicite plutôt qu'un fichier `opengraph-image.tsx` : cette
+ * convention rattache l'image à toutes les routes de la racine, y compris la
+ * 404 technique qui n'a aucune mise en page — donc aucune URL de base pour
+ * résoudre le chemin. Les pages publiques déclarent l'image elles-mêmes.
  */
-export const size = { width: 1200, height: 630 };
-export const contentType = "image/png";
-export const alt = site.name;
+const size = { width: 1200, height: 630 };
 
-export default function OpengraphImage() {
+export function GET() {
   return new ImageResponse(
     <div
       style={{

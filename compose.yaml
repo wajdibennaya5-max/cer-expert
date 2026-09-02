@@ -1,0 +1,18 @@
+# Déploiement en une commande :  docker compose up -d
+# Les variables sensibles se lisent dans « .env.local » (voir .env.example).
+services:
+  site:
+    build: .
+    image: wajdi-tayssir-services-pro
+    container_name: wajdi-tayssir
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env.local
+    volumes:
+      # Demandes, avis, galerie et photos. À sauvegarder régulièrement.
+      - wajdi-data:/app/data
+
+volumes:
+  wajdi-data:

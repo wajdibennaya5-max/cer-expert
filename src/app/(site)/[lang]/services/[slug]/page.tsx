@@ -12,7 +12,7 @@ import { button } from "@/components/ui/button";
 import { categories, getService, services } from "@/content/services";
 import { getDictionary } from "@/lib/i18n/get-dictionary";
 import { isLocale, localePath, locales, type Locale } from "@/lib/i18n/config";
-import { breadcrumbJsonLd, serviceJsonLd } from "@/lib/seo";
+import { breadcrumbJsonLd, localizedMetadata, serviceJsonLd } from "@/lib/seo";
 import { site, telHref } from "@/lib/site";
 import { PhoneText } from "@/components/ui/phone-text";
 
@@ -30,15 +30,12 @@ export async function generateMetadata({
   const service = getService(slug);
   if (!service) return { title: "404" };
   const locale = isLocale(lang) ? lang : "fr";
-  return {
+  return localizedMetadata({
+    locale,
+    path: `services/${slug}`,
     title: service.name[locale],
     description: service.short[locale],
-    alternates: {
-      canonical: `${site.url}/${locale}/services/${slug}`,
-      languages: Object.fromEntries(locales.map((item) => [item, `${site.url}/${item}/services/${slug}`])),
-    },
-    openGraph: { title: service.name[locale], description: service.short[locale] },
-  };
+  });
 }
 
 export default async function ServiceDetailPage({ params }: { params: Promise<{ lang: string; slug: string }> }) {

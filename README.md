@@ -125,6 +125,9 @@ src/
 │   ├── seo.ts                Données structurées schema.org
 │   └── stats.ts              Agrégats du tableau de bord
 └── middleware.ts             Routage linguistique
+
+Dockerfile, compose.yaml       Déploiement en conteneur (facultatif)
+scripts/                       Génération du mot de passe admin, jeu de démo
 ```
 
 **Deux mises en page racines.** Le site public et la console sont deux arbres
@@ -320,6 +323,26 @@ de processus (`pm2`, `systemd`) pour le redémarrage automatique. Un petit VPS
 (~5 $/mois) ou un hébergement Node mutualisé suffit largement : le site est
 statique à 90 %.
 
+#### Avec Docker
+
+Un `Dockerfile` et un `compose.yaml` sont fournis :
+
+```bash
+cp .env.example .env.local   # puis renseignez SESSION_SECRET, ADMIN_*, l'URL
+docker compose up -d
+```
+
+Le volume `wajdi-data` conserve les demandes, les avis, la galerie et les
+photos. **Sans ce volume, tout serait perdu à chaque redémarrage.**
+
+> Ces fichiers ont été écrits à partir d'un démarrage réellement vérifié en
+> dépendances de production (`npm ci --omit=dev`, site servi, demande créée),
+> mais la construction de l'image n'a pas pu être exécutée pendant le
+> développement : aucun démon Docker n'était disponible. Faites un
+> `docker compose build` d'essai avant de vous appuyer dessus en production.
+
+#### Avec systemd
+
 Exemple de service `systemd` :
 
 ```ini
@@ -378,7 +401,8 @@ Deux façons de procéder :
   intervenant sur des zones (`areaServed`), ce qui correspond à la réalité.
 - `sitemap.xml` (87 adresses) et `robots.txt` générés automatiquement.
 - Balises `hreflang` réciproques entre les trois langues, URL canoniques.
-- Open Graph et Twitter Card avec une vignette générée au build.
+- Open Graph et Twitter Card avec une vignette générée au build
+  (`/image-partage`, 1200 × 630).
 - Adresses lisibles et stables (`/fr/services/reparation-fuite-eau`).
 
 Pour ajouter une zone d'intervention : `/admin/parametres`. Elle apparaît
@@ -426,9 +450,11 @@ le dictionnaire correspondant, et complétez les champs de
 
 ## Vérifications effectuées
 
-- `npm run build` : succès, 100 pages générées.
+- `npm run build` : succès, 100 pages générées, aucun avertissement.
 - `npm run typecheck` : aucune erreur.
 - `npm run lint` : aucune erreur, aucun avertissement.
+- `npm ci --omit=dev` puis `npm start` : le site démarre et enregistre une
+  demande avec les seules dépendances de production.
 - Toutes les pages testées en HTTP (200), 404 localisée comprise.
 - Parcours complet de l'assistant, de l'accueil à la création de la demande.
 - Formulaire : succès, erreurs de validation, limitation d'abus, champ piège.

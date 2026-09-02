@@ -1,6 +1,6 @@
 import { services } from "@/content/services";
 import { getDictionary } from "@/lib/i18n/get-dictionary";
-import { localeMeta, type Locale } from "@/lib/i18n/config";
+import { locales, localeMeta, type Locale } from "@/lib/i18n/config";
 import { site } from "@/lib/site";
 
 /**
@@ -96,5 +96,43 @@ export function breadcrumbJsonLd(entries: { name: string; url: string }[]) {
       name: entry.name,
       item: entry.url,
     })),
+  };
+}
+
+/**
+ * Métadonnées communes à une page publique localisée.
+ *
+ * Regroupe ce qui doit être identique partout : l'URL de base (indispensable
+ * pour résoudre la vignette de partage), l'adresse canonique et les trois
+ * versions linguistiques. Chaque page n'a plus qu'à fournir son titre et sa
+ * description.
+ */
+export function localizedMetadata({
+  locale,
+  path,
+  title,
+  description,
+}: {
+  locale: Locale;
+  path: string;
+  title: string;
+  description: string;
+}) {
+  const clean = path.replace(/^\/+/, "");
+  const urlFor = (item: Locale) => `${site.url}/${item}${clean ? `/${clean}` : ""}`;
+  return {
+    metadataBase: new URL(site.url),
+    title,
+    description,
+    alternates: {
+      canonical: urlFor(locale),
+      languages: Object.fromEntries(locales.map((item) => [localeMeta[item].htmlLang, urlFor(item)])),
+    },
+    openGraph: {
+      title,
+      description,
+      url: urlFor(locale),
+      images: [{ url: "/image-partage", width: 1200, height: 630, alt: site.name }],
+    },
   };
 }

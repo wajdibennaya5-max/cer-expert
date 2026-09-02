@@ -9,7 +9,7 @@ import { Reveal } from "@/components/ui/reveal";
 import { categories, servicesByCategory } from "@/content/services";
 import { getDictionary } from "@/lib/i18n/get-dictionary";
 import { isLocale, localePath, locales, type Locale } from "@/lib/i18n/config";
-import { breadcrumbJsonLd } from "@/lib/seo";
+import { breadcrumbJsonLd, localizedMetadata } from "@/lib/seo";
 import { site } from "@/lib/site";
 
 export function generateStaticParams() {
@@ -19,14 +19,12 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }): Promise<Metadata> {
   const { lang } = await params;
   const dict = getDictionary(lang);
-  return {
+  return localizedMetadata({
+    locale: isLocale(lang) ? lang : "fr",
+    path: "services",
     title: dict.meta.services.title,
     description: dict.meta.services.description,
-    alternates: {
-      canonical: `${site.url}/${lang}/services`,
-      languages: Object.fromEntries(locales.map((item) => [item, `${site.url}/${item}/services`])),
-    },
-  };
+  });
 }
 
 export default async function ServicesPage({ params }: { params: Promise<{ lang: string }> }) {

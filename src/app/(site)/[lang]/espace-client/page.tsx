@@ -13,6 +13,7 @@ import { getClientSession } from "@/lib/auth";
 import { getDictionary } from "@/lib/i18n/get-dictionary";
 import { isLocale, localePath, type Locale } from "@/lib/i18n/config";
 import { store } from "@/lib/store";
+import { site } from "@/lib/site";
 
 /** L'espace client dépend de la session : jamais mis en cache. */
 export const dynamic = "force-dynamic";
@@ -21,6 +22,7 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
   const { lang } = await params;
   const dict = getDictionary(lang);
   return {
+    metadataBase: new URL(site.url),
     title: dict.meta.client.title,
     description: dict.meta.client.description,
     robots: { index: false, follow: true },

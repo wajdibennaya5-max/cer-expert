@@ -9,8 +9,8 @@ import { Stars } from "@/components/reviews/stars";
 import { CtaBand } from "@/components/home/cta-band";
 import { getDictionary } from "@/lib/i18n/get-dictionary";
 import { isLocale, locales, type Locale } from "@/lib/i18n/config";
-import { site } from "@/lib/site";
 import { store } from "@/lib/store";
+import { localizedMetadata } from "@/lib/seo";
 
 export function generateStaticParams() {
   return locales.map((lang) => ({ lang }));
@@ -21,14 +21,12 @@ export const revalidate = 60;
 export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }): Promise<Metadata> {
   const { lang } = await params;
   const dict = getDictionary(lang);
-  return {
+  return localizedMetadata({
+    locale: isLocale(lang) ? lang : "fr",
+    path: "avis",
     title: dict.meta.reviews.title,
     description: dict.meta.reviews.description,
-    alternates: {
-      canonical: `${site.url}/${lang}/avis`,
-      languages: Object.fromEntries(locales.map((item) => [item, `${site.url}/${item}/avis`])),
-    },
-  };
+  });
 }
 
 export default async function ReviewsPage({ params }: { params: Promise<{ lang: string }> }) {

@@ -12,6 +12,7 @@ import { isLocale, localePath, locales, type Locale } from "@/lib/i18n/config";
 import { mailHref, site, telHref, whatsappHref } from "@/lib/site";
 import { store } from "@/lib/store";
 import { PhoneText } from "@/components/ui/phone-text";
+import { localizedMetadata } from "@/lib/seo";
 
 export function generateStaticParams() {
   return locales.map((lang) => ({ lang }));
@@ -20,14 +21,12 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }): Promise<Metadata> {
   const { lang } = await params;
   const dict = getDictionary(lang);
-  return {
+  return localizedMetadata({
+    locale: isLocale(lang) ? lang : "fr",
+    path: "contact",
     title: dict.meta.contact.title,
     description: dict.meta.contact.description,
-    alternates: {
-      canonical: `${site.url}/${lang}/contact`,
-      languages: Object.fromEntries(locales.map((item) => [item, `${site.url}/${item}/contact`])),
-    },
-  };
+  });
 }
 
 export default async function ContactPage({ params }: { params: Promise<{ lang: string }> }) {

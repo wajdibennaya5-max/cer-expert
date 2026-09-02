@@ -49,6 +49,6 @@ export const config = {
   // Les routes techniques, les fichiers statiques et la console d'administration
   // ne sont pas concernés par le préfixe de langue.
   matcher: [
-    "/((?!api|admin|_next/static|_next/image|favicon.ico|icon.svg|apple-icon.png|manifest.webmanifest|robots.txt|sitemap.xml|opengraph-image.*).*)",
+    "/((?!api|admin|image-partage|_next/static|_next/image|favicon.ico|icon.svg|apple-icon.png|manifest.webmanifest|robots.txt|sitemap.xml).*)",
   ],
 };
