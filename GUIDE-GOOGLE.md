@@ -33,10 +33,21 @@ gratuit** (Cloudflare Email Routing).
 
 | | 1re année | Ensuite | Délai | Remarque |
 | --- | --- | --- | --- | --- |
-| `.xyz` chez Namecheap ou Porkbun | **~1,18 $** | ~13 $/an | immédiat | dont 0,18 $ de taxe ICANN, incompressible : c'est le plancher du marché |
+| `.xyz` **numérique** (6 à 9 chiffres) chez Namecheap | **~0,85 $** | **~0,85 $/an** | immédiat | le vrai plancher du marché, sans hausse au renouvellement — mais un numéro ne se dicte pas au téléphone |
+| `.xyz` **avec un nom** chez Namecheap ou Porkbun | ~1,17 $ | ~13 $/an | immédiat | dont 0,18 $ de taxe ICANN, incompressible |
 | `.me` via le [GitHub Student Pack](https://education.github.com/pack) | **0 $** | ~5 $/an | immédiat | **réservé aux étudiants inscrits**, sur justificatif |
 | `.eu.org` sur [nic.eu.org](https://nic.eu.org/) | **0 $** | 0 $ | **semaines à plusieurs mois** | bénévole, examen manuel, refus possible |
 | « domaine offert » d'un hébergeur | 0 $ | ~12 $/an | immédiat | ⚠️ conditionné à un hébergement à **30-100 $/an** dont ce site n'a aucun besoin |
+
+> **Le `.xyz` à un chiffre près.** Les `.xyz` composés uniquement de 6 à
+> 9 chiffres (`20122011.xyz`) forment une classe tarifaire à part : moins d'un
+> dollar, **au même prix chaque année**, sans le bond de la deuxième année. Ils
+> conviennent parfaitement à un usage technique — obtenir une adresse e-mail,
+> valider une fiche, faire tourner un tunnel. En revanche ils ne conviennent
+> pas comme adresse affichée à des clients : un numéro ne se dicte pas au
+> téléphone et n'inspire pas confiance sur un devis. La bonne façon de s'en
+> servir est de le prendre pour débloquer la validation, puis de renseigner un
+> vrai nom dans la fiche plus tard.
 
 > **Le « domaine gratuit la première année » des hébergeurs n'est pas une
 > économie.** Il est toujours lié à l'achat d'un hébergement mutualisé. Or ce
