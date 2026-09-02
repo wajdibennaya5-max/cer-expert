@@ -2,7 +2,10 @@
 # ============================================================================
 # Met le site en ligne sur VOTRE domaine, avec une adresse définitive.
 #
-#   bash scripts/domaine.sh
+#   bash scripts/domaine.sh 20122011.xyz
+#
+# Le domaine peut aussi être passé en argument, comme ci-dessus : le script ne
+# pose alors aucune question et enchaîne tout seul jusqu'à la mise en ligne.
 #
 # Condition préalable : posséder un nom de domaine (acheté chez n'importe quel
 # registrar) et l'avoir ajouté à un compte Cloudflare gratuit — c'est-à-dire
@@ -62,17 +65,21 @@ CF_TUNNEL_NAME=""
 # shellcheck disable=SC1091
 [ -f tunnel.conf ] && . ./tunnel.conf
 
-if [ -n "$CF_HOSTNAME" ]; then
-  echo "→ Domaine actuel : $CF_HOSTNAME"
-  printf "  Entrée pour le garder, ou tapez un autre domaine : "
-else
-  echo
-  echo "  Tapez votre nom de domaine, sans https:// et sans www."
-  echo "  Exemple :  wajdi-tayssir-services.com"
-  echo
-  printf "  Domaine : "
+# Le domaine peut venir de la ligne de commande — rien à taper dans ce cas.
+SAISIE="${1:-}"
+if [ -z "$SAISIE" ]; then
+  if [ -n "$CF_HOSTNAME" ]; then
+    echo "→ Domaine actuel : $CF_HOSTNAME"
+    printf "  Entrée pour le garder, ou tapez un autre domaine : "
+  else
+    echo
+    echo "  Tapez votre nom de domaine, sans https:// et sans www."
+    echo "  Exemple :  wajdi-tayssir-services.com"
+    echo
+    printf "  Domaine : "
+  fi
+  read -r SAISIE
 fi
-read -r SAISIE
 [ -n "$SAISIE" ] && CF_HOSTNAME="$SAISIE"
 
 # Tolère un collage complet du type https://www.exemple.com/contact

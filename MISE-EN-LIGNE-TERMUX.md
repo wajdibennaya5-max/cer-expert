@@ -402,10 +402,13 @@ minutes à quelques heures.
 Dans Ubuntu, sur le téléphone :
 
 ```bash
-cd ~/wajdi-tayssir && git pull && bash scripts/domaine.sh
+cd ~/wajdi-tayssir && git pull && bash scripts/domaine.sh votredomaine.com
 ```
 
-Le script installe `cloudflared` si besoin, vous demande votre domaine, affiche
+Le domaine passé en argument évite toute saisie : le script enchaîne seul.
+Sans argument, il le demande.
+
+Le script installe `cloudflared` si besoin, affiche
 **un lien à ouvrir** pour autoriser le téléphone sur votre compte Cloudflare,
 crée le tunnel nommé, fait pointer le domaine et le `www` dessus, puis démarre
 le site et vérifie qu'il répond depuis Internet.
