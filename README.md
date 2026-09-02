@@ -487,10 +487,13 @@ le dictionnaire correspondant, et complétez les champs de
 
 ---
 
-## Guide d'utilisation quotidienne
+## Guides
 
-Voir **[GUIDE-ADMIN.md](./GUIDE-ADMIN.md)** — rédigé pour une utilisation sans
-connaissances techniques.
+| Guide | Pour quoi |
+| --- | --- |
+| **[GUIDE-ADMIN.md](./GUIDE-ADMIN.md)** | Utiliser la console au quotidien, sans connaissances techniques |
+| **[MISE-EN-LIGNE-TERMUX.md](./MISE-EN-LIGNE-TERMUX.md)** | Héberger le site depuis un téléphone Android, et obtenir une adresse fixe |
+| **[GUIDE-GOOGLE.md](./GUIDE-GOOGLE.md)** | Valider la fiche Google Business Profile par vidéo, quand le SMS n'arrive pas |
 
 ---
 
