@@ -11,9 +11,8 @@
 next-env.d.ts
 
 # données locales (créées à l'exécution)
-/data/*.json
-/public/uploads/*
-!/public/uploads/.gitkeep
+# Les demandes, avis, galerie et photos vivent dans /data — jamais dans le dépôt.
+/data/
 
 # environnement
 .env
