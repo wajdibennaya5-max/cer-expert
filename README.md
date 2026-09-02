@@ -362,6 +362,13 @@ User=www-data
 WantedBy=multi-user.target
 ```
 
+### Option « depuis un téléphone » — Termux
+
+Possible, et documenté pas à pas dans **[MISE-EN-LIGNE-TERMUX.md](./MISE-EN-LIGNE-TERMUX.md)**
+(Ubuntu via `proot-distro`, puis tunnel Cloudflare gratuit pour l'accès
+extérieur). À réserver aux essais et aux démonstrations : un téléphone
+s'éteint, chauffe et voit ses processus arrêtés par Android.
+
 ### Option « niveau gratuit » — Vercel, Netlify, Cloudflare
 
 Le déploiement est immédiat (import du dépôt Git, aucune configuration), et le
