@@ -31,10 +31,17 @@ gratuit** (Cloudflare Email Routing).
 
 **1. Obtenir un domaine.** Deux possibilités, et seulement deux :
 
-| | Coût | Délai | Remarque |
-| --- | --- | --- | --- |
-| `.xyz` chez Namecheap ou Porkbun | **~1,18 $** (dont 0,18 $ de taxe ICANN, incompressible) | immédiat | le plancher absolu du marché |
-| `.eu.org` sur [nic.eu.org](https://nic.eu.org/) | **0 $** | **quelques semaines à plusieurs mois** | bénévole, examen manuel, refus possible |
+| | 1re année | Ensuite | Délai | Remarque |
+| --- | --- | --- | --- | --- |
+| `.xyz` chez Namecheap ou Porkbun | **~1,18 $** | ~13 $/an | immédiat | dont 0,18 $ de taxe ICANN, incompressible : c'est le plancher du marché |
+| `.me` via le [GitHub Student Pack](https://education.github.com/pack) | **0 $** | ~5 $/an | immédiat | **réservé aux étudiants inscrits**, sur justificatif |
+| `.eu.org` sur [nic.eu.org](https://nic.eu.org/) | **0 $** | 0 $ | **semaines à plusieurs mois** | bénévole, examen manuel, refus possible |
+| « domaine offert » d'un hébergeur | 0 $ | ~12 $/an | immédiat | ⚠️ conditionné à un hébergement à **30-100 $/an** dont ce site n'a aucun besoin |
+
+> **Le « domaine gratuit la première année » des hébergeurs n'est pas une
+> économie.** Il est toujours lié à l'achat d'un hébergement mutualisé. Or ce
+> site tourne sur le téléphone : payer un hébergement pour obtenir un domaine
+> revient à dépenser trente fois le prix du domaine seul.
 
 **2. Mettre le domaine sur Cloudflare.** `dash.cloudflare.com` → *Add a site* →
 plan **Free**. Cloudflare donne deux serveurs de noms à déclarer chez le
