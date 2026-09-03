@@ -58,6 +58,23 @@ const publicCache = [
  */
 const noStore = [{ key: "Cache-Control", value: "private, no-store, max-age=0" }];
 
+/**
+ * Ressources qui ne changent qu'entre deux mises en production : vignette de
+ * partage, icône, manifeste, sitemap, robots.
+ *
+ * La vignette de partage est une image de 1200 × 630 générée à la demande. Sans
+ * cette directive, elle est recalculée à chaque fois qu'un lien est collé dans
+ * une conversation — or le partage sur WhatsApp est le premier canal de
+ * l'entreprise, et le serveur est un téléphone. Une semaine de cache à la
+ * périphérie ramène ce coût à une génération par déploiement.
+ */
+const longCache = [
+  {
+    key: "Cache-Control",
+    value: "public, max-age=3600, s-maxage=604800, stale-while-revalidate=604800, stale-if-error=2592000",
+  },
+];
+
 /** Les trois langues du site, pour cibler les pages publiques. */
 const LANG = "fr|en|ar";
 
@@ -78,6 +95,13 @@ const nextConfig: NextConfig = {
       // dans la même réponse, et le comportement dépendrait alors du cache.
       { source: `/:lang(${LANG})`, headers: publicCache },
       { source: `/:lang(${LANG})/:path((?!espace-client).*)`, headers: publicCache },
+
+      // Ressources stables, servies depuis la périphérie plutôt que du téléphone.
+      { source: "/image-partage", headers: longCache },
+      { source: "/icon.svg", headers: longCache },
+      { source: "/manifest.webmanifest", headers: longCache },
+      { source: "/sitemap.xml", headers: longCache },
+      { source: "/robots.txt", headers: longCache },
 
       // Tout ce qui est personnel ou authentifié.
       { source: `/:lang(${LANG})/espace-client`, headers: noStore },
