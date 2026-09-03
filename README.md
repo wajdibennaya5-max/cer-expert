@@ -415,13 +415,26 @@ Deux façons de procéder :
 
 ### Après la mise en ligne
 
-- Déclarez le site dans **Google Search Console** et soumettez
-  `https://20122011.xyz/sitemap.xml`.
-- Créez une fiche **Google Business Profile** : pour une entreprise locale,
-  c'est le premier levier de visibilité, avant le site lui-même.
-- Remplacez les avis d'exemple par de vrais témoignages, puis décochez
-  « Afficher les avis d'exemple » dans les paramètres.
-- Publiez de vraies photos de chantier dans la galerie.
+- **Google Search Console** — déclarez le site et soumettez
+  `https://20122011.xyz/sitemap.xml`. Search Console est **indépendante de la
+  fiche Google Business Profile** : elle continue de référencer le site même
+  sans fiche, ce qui en fait le canal à privilégier si la fiche est
+  indisponible. La preuve de propriété se fait soit par l'enregistrement DNS TXT
+  fourni par Search Console (le plus simple, le domaine étant sur Cloudflare),
+  soit par la balise HTML, en renseignant
+  `NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION` dans `.env.local`.
+- **Google Business Profile** — pour une entreprise locale, c'est un levier
+  puissant, mais exigeant : une entreprise, une fiche, un numéro. Plusieurs
+  fiches pour la même activité entraînent une suspension pour contenu trompeur.
+  Voir [GUIDE-GOOGLE.md](./GUIDE-GOOGLE.md).
+- **Avis** — remplacez les avis d'exemple par de vrais témoignages, puis
+  décochez « Afficher les avis d'exemple » dans les paramètres. N'achetez jamais
+  d'avis : c'est le motif de suppression le plus expéditif.
+- **Photos** — publiez de vraies photos de chantier dans la galerie. C'est ce
+  qui distingue un site d'artisan d'un modèle vide.
+- **Réseaux sociaux** — une page Facebook et WhatsApp Business complètent le
+  site sans dépendre de Google. Renseignez `NEXT_PUBLIC_FACEBOOK_URL` pour que
+  la page soit déclarée aux moteurs comme compte officiel.
 
 ---
 
