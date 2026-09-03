@@ -119,7 +119,7 @@ export default async function SiteLayout({
           dict={dict}
           announcement={
             settings.announcement.enabled && settings.announcement.text ? (
-              <AnnouncementBar text={settings.announcement.text} />
+              <AnnouncementBar text={settings.announcement.text} closeLabel={dict.common.close} />
             ) : null
           }
         />

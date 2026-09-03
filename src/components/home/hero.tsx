@@ -97,7 +97,7 @@ export function Hero({ locale, dict, areaCount }: { locale: Locale; dict: Dictio
 
         <div className="relative lg:col-span-6 xl:col-span-6">
           <div className="gradient-border relative rounded-[2rem] bg-ink-900/60 p-3 shadow-[0_40px_120px_-40px_rgba(6,170,212,0.6)] backdrop-blur-sm">
-            <HouseSystemsScene className="w-full rounded-[1.6rem]" />
+            <HouseSystemsScene className="w-full rounded-[1.6rem]" label={dict.common.heroSceneAlt} />
           </div>
 
           <div

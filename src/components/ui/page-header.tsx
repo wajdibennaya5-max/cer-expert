@@ -26,7 +26,7 @@ export function PageHeader({
       <div className="aurora opacity-70" aria-hidden="true" />
       <div className="tech-grid" aria-hidden="true" />
       <div className="container-page relative">
-        <nav aria-label="Fil d'Ariane" className="flex flex-wrap items-center gap-2 text-xs text-slate-400">
+        <nav aria-label={dict.common.breadcrumb} className="flex flex-wrap items-center gap-2 text-xs text-slate-400">
           <Link href={localePath(locale)} className="transition hover:text-aqua-300">
             {dict.nav.home}
           </Link>

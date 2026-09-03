@@ -27,13 +27,13 @@ const INK = "#0c1424";
  * (ambre). Les deux flux sont animés par un pointillé qui avance — la seule
  * animation continue de la page, et elle porte le message du site.
  */
-export function HouseSystemsScene({ className }: SceneProps) {
+export function HouseSystemsScene({ className, label }: SceneProps & { label?: string }) {
   return (
     <svg
       viewBox="0 0 520 440"
       className={className}
       role="img"
-      aria-label="Schéma d'une maison : circuit d'eau et circuit électrique"
+      aria-label={label ?? "Schéma d'une maison : circuit d'eau et circuit électrique"}
     >
       <defs>
         <linearGradient id="hs-sky" x1="0" y1="0" x2="1" y2="1">

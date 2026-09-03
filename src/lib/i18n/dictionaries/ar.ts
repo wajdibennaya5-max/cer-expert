@@ -367,6 +367,8 @@ export const ar: Dictionary = {
     optional: "اختياري",
     of: "من",
     skipToContent: "الانتقال إلى المحتوى",
+    breadcrumb: "مسار التنقل",
+    heroSceneAlt: "رسم توضيحي لمنزل يبيّن دارة الماء ودارة الكهرباء",
   },
   legal: {
     privacy: {

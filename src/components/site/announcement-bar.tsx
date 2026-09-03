@@ -12,7 +12,7 @@ const KEY = "wtsp.announcement.dismissed";
  * Refermable : une fois écarté, il ne réapparaît pas de la session — un bandeau
  * qu'on ne peut pas fermer devient vite une nuisance.
  */
-export function AnnouncementBar({ text }: { text: string }) {
+export function AnnouncementBar({ text, closeLabel }: { text: string; closeLabel: string }) {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
@@ -29,7 +29,17 @@ export function AnnouncementBar({ text }: { text: string }) {
     <div className="no-print relative bg-gradient-to-r from-aqua-600 via-aqua-500 to-volt-500 text-ink-950">
       <div className="container-page flex items-center gap-3 py-2 text-center text-[0.78rem] font-semibold sm:text-sm">
         <Icon name="spark" size={16} className="hidden shrink-0 sm:block" />
-        <p className="flex-1 text-balance">{text}</p>
+        {/*
+          Le texte est saisi librement dans la console : rien ne garantit qu'il
+          soit dans la langue de la page. `dir="auto"` laisse le navigateur
+          déduire la direction des premiers caractères, et `<bdi>` empêche cette
+          direction de déteindre sur le reste du bandeau. Sans cela, une annonce
+          française sur la version arabe voit sa ponctuation se déplacer en tête
+          de phrase.
+        */}
+        <bdi dir="auto" className="flex-1 text-balance">
+          {text}
+        </bdi>
         <a
           href={telHref}
           className="hidden shrink-0 rounded-full bg-ink-950/85 px-3 py-1 font-bold text-white sm:inline-block"
@@ -38,7 +48,7 @@ export function AnnouncementBar({ text }: { text: string }) {
         </a>
         <button
           type="button"
-          aria-label="Fermer"
+          aria-label={closeLabel}
           onClick={() => {
             setVisible(false);
             try {

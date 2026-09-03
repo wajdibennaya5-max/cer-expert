@@ -392,6 +392,8 @@ export const en: Dictionary = {
     optional: "optional",
     of: "of",
     skipToContent: "Skip to main content",
+    breadcrumb: "Breadcrumb",
+    heroSceneAlt: "Diagram of a house showing the water and electrical circuits",
   },
   legal: {
     privacy: {

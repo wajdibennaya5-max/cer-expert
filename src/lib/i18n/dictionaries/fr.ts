@@ -402,6 +402,8 @@ export const fr = {
     optional: "facultatif",
     of: "sur",
     skipToContent: "Aller au contenu principal",
+    breadcrumb: "Fil d'Ariane",
+    heroSceneAlt: "Schéma d'une maison : circuit d'eau et circuit électrique",
   },
   legal: {
     privacy: {
