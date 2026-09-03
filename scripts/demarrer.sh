@@ -115,6 +115,45 @@ demarrer_ngrok() {
   return 0
 }
 
+# ------------------------------- tunnel Cloudflare par jeton (votre domaine)
+demarrer_cloudflared_jeton() {
+  if ! command -v cloudflared > /dev/null 2>&1; then
+    echo "✗ cloudflared n'est pas installé. Lancez : bash scripts/domaine.sh"
+    exit 1
+  fi
+  if [ ! -s "$CF_TOKEN_FILE" ]; then
+    echo "✗ Jeton introuvable. Relancez : bash scripts/tunnel-token.sh"
+    exit 1
+  fi
+
+  URL="https://$CF_HOSTNAME"
+
+  if pgrep -x cloudflared > /dev/null 2>&1 && [ "$(tester "$URL")" = "200" ]; then
+    echo "→ Tunnel déjà actif sur $CF_HOSTNAME."
+    return 0
+  fi
+
+  pkill -x cloudflared > /dev/null 2>&1 && sleep 2
+  echo "→ Ouverture du tunnel vers $CF_HOSTNAME…"
+
+  # Le jeton passe par l'environnement : en argument, il serait lisible par
+  # n'importe quel programme de la machine via `ps`.
+  TUNNEL_TOKEN="$(cat "$CF_TOKEN_FILE")" \
+    nohup cloudflared tunnel --protocol http2 run > "$TUNNEL_LOG" 2>&1 &
+  echo $! > "$TUNNEL_PID"
+
+  for _ in $(seq 1 30); do
+    sleep 3
+    [ "$(tester "$URL")" = "200" ] && return 0
+    if grep -qi "invalid tunnel secret\|Unauthorized" "$TUNNEL_LOG" 2>/dev/null; then
+      echo "✗ Jeton refusé par Cloudflare."
+      echo "  Effacez-le puis recommencez : rm $CF_TOKEN_FILE"
+      exit 1
+    fi
+  done
+  return 0
+}
+
 # ----------------------------------- tunnel Cloudflare nommé (votre domaine)
 demarrer_cloudflared_nomme() {
   if ! command -v cloudflared > /dev/null 2>&1; then
@@ -201,10 +240,13 @@ demarrer_cloudflared() {
 NGROK_DOMAIN=""
 CF_TUNNEL_NAME=""
 CF_HOSTNAME=""
+CF_TOKEN_FILE=""
 # shellcheck disable=SC1091
 [ -f "$PROJECT/tunnel.conf" ] && . "$PROJECT/tunnel.conf"
 
-if [ -n "$CF_TUNNEL_NAME" ] && [ -n "$CF_HOSTNAME" ]; then
+if [ -n "$CF_TOKEN_FILE" ] && [ -n "$CF_HOSTNAME" ]; then
+  demarrer_cloudflared_jeton
+elif [ -n "$CF_TUNNEL_NAME" ] && [ -n "$CF_HOSTNAME" ]; then
   demarrer_cloudflared_nomme
 elif [ -n "$NGROK_DOMAIN" ]; then
   demarrer_ngrok
