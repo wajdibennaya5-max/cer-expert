@@ -46,7 +46,7 @@ export function ServiceCard({
             <Icon name={service.icon} size={26} />
           </span>
           {service.emergency ? (
-            <span className="inline-flex items-center gap-1 rounded-full border border-red-200 bg-red-50 px-2.5 py-1 text-[0.65rem] font-bold uppercase tracking-wider text-red-600">
+            <span className="inline-flex items-center gap-1 rounded-full border border-red-200 bg-red-50 px-2.5 py-1 text-[0.65rem] font-bold uppercase tracking-wider text-red-700">
               <Icon name="alert" size={12} />
               {dict.services.emergencyTag}
             </span>

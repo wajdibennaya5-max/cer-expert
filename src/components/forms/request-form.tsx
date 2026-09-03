@@ -274,7 +274,7 @@ export function RequestForm({ locale, dict, areas }: { locale: Locale; dict: Dic
             <div className="sm:col-span-2">
               <label htmlFor="email" className={label}>
                 {dict.request.fields.email}{" "}
-                <span className="font-normal text-slate-400">({dict.request.optional})</span>
+                <span className="font-normal text-slate-500">({dict.request.optional})</span>
               </label>
               <input
                 id="email"
@@ -402,7 +402,7 @@ export function RequestForm({ locale, dict, areas }: { locale: Locale; dict: Dic
             <div>
               <span className={label}>
                 {dict.request.fields.photos}{" "}
-                <span className="font-normal text-slate-400">({dict.request.optional})</span>
+                <span className="font-normal text-slate-500">({dict.request.optional})</span>
               </span>
               <label className="flex cursor-pointer flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-mist-300 bg-mist-50 px-4 py-7 text-center transition hover:border-aqua-400 hover:bg-aqua-50">
                 <span className="flex h-11 w-11 items-center justify-center rounded-full bg-white text-aqua-600 shadow-sm">
@@ -480,7 +480,7 @@ export function RequestForm({ locale, dict, areas }: { locale: Locale; dict: Dic
             <div>
               <label htmlFor="address" className={label}>
                 {dict.request.fields.address}{" "}
-                <span className="font-normal text-slate-400">({dict.request.optional})</span>
+                <span className="font-normal text-slate-500">({dict.request.optional})</span>
               </label>
               <input
                 id="address"
@@ -493,14 +493,14 @@ export function RequestForm({ locale, dict, areas }: { locale: Locale; dict: Dic
             <div>
               <label htmlFor="preferredDate" className={label}>
                 {dict.request.fields.date}{" "}
-                <span className="font-normal text-slate-400">({dict.request.optional})</span>
+                <span className="font-normal text-slate-500">({dict.request.optional})</span>
               </label>
               <input id="preferredDate" name="preferredDate" type="date" min={today} className={field} />
             </div>
             <div>
               <label htmlFor="preferredTime" className={label}>
                 {dict.request.fields.time}{" "}
-                <span className="font-normal text-slate-400">({dict.request.optional})</span>
+                <span className="font-normal text-slate-500">({dict.request.optional})</span>
               </label>
               <input id="preferredTime" name="preferredTime" type="time" className={field} />
             </div>

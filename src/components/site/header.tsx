@@ -133,9 +133,16 @@ export function Header({ locale, dict, announcement }: HeaderProps) {
       </header>
 
       {/* -------------------------------------------------- menu mobile */}
+      {/*
+        `inert` retire tout le sous-arbre de la navigation au clavier et de
+        l'arbre d'accessibilité tant que le menu est fermé. Sans lui, un
+        utilisateur au clavier traverse une dizaine de liens invisibles avant
+        d'atteindre la page — et `aria-hidden` seul ne l'empêche pas, il ne fait
+        que masquer aux lecteurs d'écran des éléments qui restent focalisables.
+      */}
       <div
         className={`fixed inset-0 z-[60] lg:hidden ${menuOpen ? "" : "pointer-events-none"}`}
-        aria-hidden={!menuOpen}
+        inert={!menuOpen}
       >
         <div
           className={`absolute inset-0 bg-ink-950/70 backdrop-blur-sm transition-opacity duration-300 ${

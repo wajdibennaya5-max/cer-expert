@@ -19,7 +19,7 @@ export function ReviewList({ reviews, locale, dict }: { reviews: Review[]; local
             <div className="flex items-center justify-between gap-3">
               <Stars rating={review.rating} />
               {review.isSample ? (
-                <span className="rounded-full border border-mist-200 bg-mist-100 px-2.5 py-1 text-[0.62rem] font-bold uppercase tracking-wider text-slate-500">
+                <span className="rounded-full border border-mist-200 bg-mist-100 px-2.5 py-1 text-[0.62rem] font-bold uppercase tracking-wider text-slate-600">
                   {dict.reviews.sampleBadge}
                 </span>
               ) : null}

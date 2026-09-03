@@ -71,7 +71,7 @@ export function ReviewForm({ locale, dict }: { locale: Locale; dict: Dictionary 
         <label className="block">
           <span className="mb-1.5 block text-sm font-semibold text-ink-900">
             {dict.reviews.form.area}{" "}
-            <span className="font-normal text-slate-400">({dict.reviews.form.optional})</span>
+            <span className="font-normal text-slate-500">({dict.reviews.form.optional})</span>
           </span>
           <input name="area" maxLength={60} className={field} />
         </label>
@@ -106,7 +106,7 @@ export function ReviewForm({ locale, dict }: { locale: Locale; dict: Dictionary 
       <label className="mt-4 block">
         <span className="mb-1.5 block text-sm font-semibold text-ink-900">
           {dict.reviews.form.service}{" "}
-          <span className="font-normal text-slate-400">({dict.reviews.form.optional})</span>
+          <span className="font-normal text-slate-500">({dict.reviews.form.optional})</span>
         </span>
         <select name="serviceSlug" className={field} defaultValue="">
           <option value="">—</option>
