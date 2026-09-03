@@ -11,20 +11,33 @@ pour suivre chaque intervention du premier appel à la fin du chantier.
 
 ## ⚠️ À vérifier avant la mise en ligne
 
-Trois points, deux minutes :
+Deux points, deux minutes :
 
-1. **L'adresse e-mail.** Le site affiche `wajdibennaya@gmail.com`. La demande
-   initiale comportait un espace (`wajdi bennaya@gmail.com`), qui n'est pas une
-   adresse valide — l'espace a donc été retiré. **Si votre adresse réelle est
-   différente** (par exemple `wajdibennaya5@gmail.com`), corrigez-la dans
-   `.env.local` via `NEXT_PUBLIC_CONTACT_EMAIL`, ou dans `src/lib/site.ts`.
-2. **Le mot de passe d'administration.** Sans configuration, le compte de
+1. **Le mot de passe d'administration.** Sans configuration, le compte de
    développement `admin / admin` est actif. Voir § Sécurité.
-3. **La clé de session** (`SESSION_SECRET`). Sans elle, une valeur de
+2. **La clé de session** (`SESSION_SECRET`). Sans elle, une valeur de
    développement connue est utilisée. Voir § Sécurité.
 
-La console d'administration affiche un bandeau d'avertissement tant que les
-points 2 et 3 ne sont pas réglés.
+La console d'administration affiche un bandeau d'avertissement tant que ces
+deux points ne sont pas réglés.
+
+### Identité de l'entreprise
+
+| | |
+| --- | --- |
+| Adresse du site | `https://20122011.xyz` |
+| Téléphone | `+216 54 062 596` |
+| E-mail | `contact@20122011.xyz` |
+
+Ces trois valeurs vivent dans `src/lib/site.ts` et se propagent partout :
+en-tête, pied de page, boutons d'appel, données structurées, sitemap. Elles se
+remplacent sans toucher au code, via `NEXT_PUBLIC_SITE_URL`,
+`NEXT_PUBLIC_CONTACT_PHONE` et `NEXT_PUBLIC_CONTACT_EMAIL` dans `.env.local`.
+
+L'adresse `contact@20122011.xyz` n'est pas une boîte à gérer : Cloudflare Email
+Routing redirige tout le courrier du domaine vers la boîte Gmail habituelle,
+gratuitement. Une adresse au nom du domaine sur un devis inspire nettement plus
+confiance qu'une adresse gratuite.
 
 ---
 
@@ -314,7 +327,7 @@ npm ci
 npm run build
 NODE_ENV=production \
 SESSION_SECRET=... ADMIN_USERNAME=... ADMIN_PASSWORD_HASH=... \
-NEXT_PUBLIC_SITE_URL=https://votre-domaine.tn \
+NEXT_PUBLIC_SITE_URL=https://20122011.xyz \
 npm start          # écoute sur le port 3000
 ```
 
@@ -403,7 +416,7 @@ Deux façons de procéder :
 ### Après la mise en ligne
 
 - Déclarez le site dans **Google Search Console** et soumettez
-  `https://votre-domaine.tn/sitemap.xml`.
+  `https://20122011.xyz/sitemap.xml`.
 - Créez une fiche **Google Business Profile** : pour une entreprise locale,
   c'est le premier levier de visibilité, avant le site lui-même.
 - Remplacez les avis d'exemple par de vrais témoignages, puis décochez

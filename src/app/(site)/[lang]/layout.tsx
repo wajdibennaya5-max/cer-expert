@@ -79,6 +79,13 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
       images: ["/image-partage"],
     },
     robots: { index: true, follow: true },
+    // Preuve de propriété pour Google Search Console. Search Console est
+    // indépendante de la fiche Google Business Profile : elle continue de
+    // référencer le site même sans fiche, ce qui en fait le canal de secours
+    // quand la fiche est indisponible.
+    ...(process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION
+      ? { verification: { google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION } }
+      : {}),
     formatDetection: { telephone: true },
   };
 }

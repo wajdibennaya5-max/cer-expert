@@ -10,10 +10,23 @@ import { site } from "@/lib/site";
  * on déclare donc une zone desservie (`areaServed`) et aucune adresse postale,
  * puisque aucune adresse n'a été fournie. Rien n'est inventé — un faux
  * `PostalAddress` serait sanctionné par les moteurs et trompeur pour le client.
+ *
+ * ⚠️ Ne pas ajouter `aggregateRating` ni `review` ici.
+ *
+ * Les avis affichés sur ce site portent sur l'entreprise et sont hébergés par
+ * l'entreprise : Google les qualifie d'« avis intéressés » (self-serving) et
+ * rend explicitement la page inéligible aux étoiles dans les résultats de
+ * recherche. Le balisage serait donc sans effet visible — et, sur un domaine
+ * qui a déjà connu une suspension pour contenu trompeur, il ajouterait un
+ * signal indésirable pour un gain nul.
+ *
+ * Les étoiles ne viennent que d'une source tierce (fiche Google
+ * Business Profile), jamais d'ici.
  */
 
 export function organizationJsonLd(locale: Locale, areas: string[]) {
   const dict = getDictionary(locale);
+  const sameAs = [site.social.facebook, site.social.instagram].filter(Boolean);
   return {
     "@context": "https://schema.org",
     "@type": ["LocalBusiness", "Plumber", "Electrician"],
@@ -24,6 +37,19 @@ export function organizationJsonLd(locale: Locale, areas: string[]) {
     url: `${site.url}/${locale}`,
     telephone: site.phone.dial,
     email: site.email,
+    // Le point de contact explicite renseigne les langues réellement parlées :
+    // c'est ce qui décide qu'un client arabophone ou anglophone ose appeler.
+    contactPoint: {
+      "@type": "ContactPoint",
+      contactType: "customer service",
+      telephone: site.phone.dial,
+      email: site.email,
+      availableLanguage: ["French", "Arabic", "English"],
+      areaServed: site.country,
+    },
+    // `sameAs` n'est déclaré que si les comptes existent vraiment : une page
+    // sociale annoncée puis introuvable dégrade la confiance du moteur.
+    ...(sameAs.length > 0 ? { sameAs } : {}),
     image: `${site.url}/icon.svg`,
     logo: `${site.url}/icon.svg`,
     priceRange: "$$",

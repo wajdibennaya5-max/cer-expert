@@ -34,7 +34,16 @@ export const site = {
     /** Format international sans « + », requis par les liens WhatsApp. */
     whatsapp: toDialable(rawPhone).replace("+", ""),
   },
-  email: process.env.NEXT_PUBLIC_CONTACT_EMAIL ?? "wajdibennaya@gmail.com",
+  /**
+   * Adresse professionnelle sur le domaine de l'entreprise.
+   *
+   * Elle est servie gratuitement par Cloudflare Email Routing, qui redirige
+   * tout le courrier du domaine vers la boîte personnelle. Une adresse au nom
+   * du domaine inspire nettement plus confiance sur un devis qu'une adresse
+   * gratuite, et c'est la seule qui permette de prouver le domaine auprès de
+   * services tiers.
+   */
+  email: process.env.NEXT_PUBLIC_CONTACT_EMAIL ?? "contact@20122011.xyz",
   /** Pays d'exercice — aucune adresse physique n'est inventée ici. */
   country: "TN",
   countryName: "Tunisie",
@@ -46,7 +55,7 @@ export const site = {
     emergency: "Urgences : nous consulter",
   },
   /** URL canonique publique — indispensable au SEO (sitemap, Open Graph, hreflang). */
-  url: (process.env.NEXT_PUBLIC_SITE_URL ?? "https://wajdi-tayssir-services.example.com").replace(/\/$/, ""),
+  url: (process.env.NEXT_PUBLIC_SITE_URL ?? "https://20122011.xyz").replace(/\/$/, ""),
   social: {
     facebook: process.env.NEXT_PUBLIC_FACEBOOK_URL ?? "",
     instagram: process.env.NEXT_PUBLIC_INSTAGRAM_URL ?? "",
@@ -56,6 +65,3 @@ export const site = {
 export const telHref = `tel:${site.phone.dial}`;
 export const mailHref = `mailto:${site.email}`;
 export const whatsappHref = `https://wa.me/${site.phone.whatsapp}`;
-
-/** Le site a-t-il été configuré avec une URL publique réelle ? (utilisé par robots.txt) */
-export const hasPublicUrl = Boolean(process.env.NEXT_PUBLIC_SITE_URL);
