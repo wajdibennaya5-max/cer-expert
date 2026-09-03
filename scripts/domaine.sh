@@ -162,11 +162,14 @@ router "www.$CF_HOSTNAME"
 echo
 echo "→ Adresse définitive : https://$CF_HOSTNAME"
 echo
-echo "  Pensez ensuite à créer votre e-mail professionnel, gratuitement :"
-echo "  dash.cloudflare.com → $CF_HOSTNAME → Email → Email Routing."
-echo "  Créez  contact@$CF_HOSTNAME  et faites-le suivre vers votre Gmail."
-echo "  C'est cette adresse que Google utilisera pour valider votre fiche."
-echo
+# Le routage DNS ne remplace que l'enregistrement web du même nom : les MX
+# d'Email Routing, d'un autre type et verrouillés par Cloudflare, sont intacts.
+if [ -f "$HOME/.cloudflared/cert.pem" ]; then
+  echo "  Le courrier du domaine n'est pas affecté : seuls les enregistrements"
+  echo "  web ont changé. Si Email Routing n'est pas encore en place, il se"
+  echo "  configure sur dash.cloudflare.com → $CF_HOSTNAME → Email Routing."
+  echo
+fi
 
 # ------------------------------------------------------------- mise en ligne
 exec bash "$PROJECT/scripts/demarrer.sh"
