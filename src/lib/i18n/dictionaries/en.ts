@@ -396,7 +396,8 @@ export const en: Dictionary = {
     of: "of",
     skipToContent: "Skip to main content",
     notFoundTitle: "This page does not exist",
-    notFoundText: "The address may be wrong, or the page has moved. Our services are still available below — and the phone always answers.",
+    notFoundText:
+      "The address may be wrong, or the page has moved. Our services are still available below — and the phone always answers.",
     breadcrumb: "Breadcrumb",
     heroSceneAlt: "Diagram of a house showing the water and electrical circuits",
   },

@@ -406,7 +406,8 @@ export const fr = {
     of: "sur",
     skipToContent: "Aller au contenu principal",
     notFoundTitle: "Cette page n'existe pas",
-    notFoundText: "L'adresse est peut-être erronée, ou la page a été déplacée. Nos services restent accessibles ci-dessous — et le téléphone répond toujours.",
+    notFoundText:
+      "L'adresse est peut-être erronée, ou la page a été déplacée. Nos services restent accessibles ci-dessous — et le téléphone répond toujours.",
     breadcrumb: "Fil d'Ariane",
     heroSceneAlt: "Schéma d'une maison : circuit d'eau et circuit électrique",
   },
