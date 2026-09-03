@@ -461,6 +461,74 @@ automatiquement au redémarrage du téléphone.
 
 ---
 
+## Étape 9 — Que le site survive à l'extinction du téléphone
+
+L'étape précédente retarde l'arrêt du site ; celle-ci fait qu'il reste visible
+**même quand le téléphone est éteint**. Elle est gratuite et se règle en trois
+minutes, une fois pour toutes.
+
+Le principe : demander à Cloudflare de garder une copie des pages publiques et
+de la servir quand votre téléphone ne répond plus. Le visiteur voit le site au
+lieu d'une erreur 502. Le code annonce déjà les bonnes directives — il ne reste
+qu'à autoriser Cloudflare à s'en servir.
+
+### 1. Mettre les pages publiques en cache
+
+Sur **dash.cloudflare.com** → votre domaine → **Caching** → **Cache Rules** →
+*Create rule* :
+
+| Champ | Valeur |
+| --- | --- |
+| Nom de la règle | `Pages publiques` |
+| Si… (expression) | `URI Path` **ne commence pas par** `/api` |
+| Alors | **Eligible for cache** |
+| Edge TTL | *Use cache-control header if present* |
+
+Ajoutez une seconde condition si l'éditeur le permet : `URI Path` **ne contient
+pas** `espace-client`. Ce n'est pas indispensable — le site renvoie déjà
+`no-store` sur ces pages, et Cloudflare le respecte — mais deux protections
+valent mieux qu'une quand il s'agit de données de clients.
+
+> ⚠️ **Ne créez jamais une règle « Cache Everything » sans condition.**
+> Elle mettrait en cache l'espace client et l'administration, et servirait au
+> visiteur suivant les demandes, les numéros et les photos d'un autre client.
+
+### 2. Activer « Always Online »
+
+**Caching** → **Configuration** → **Always Online** → **On**.
+
+Cloudflare sert alors la dernière version connue de vos pages quand votre
+serveur est injoignable. Si elle n'est plus dans son cache, il va la chercher
+dans l'archive d'Internet (Internet Archive), avec laquelle la fonction est
+intégrée.
+
+### 3. Vérifier
+
+Une fois le site relancé, visitez-le deux fois puis **éteignez le serveur** :
+
+```bash
+bash scripts/arreter.sh
+```
+
+Rechargez `https://votre-domaine` depuis un autre appareil : la page doit
+toujours s'afficher. Relancez ensuite avec `bash scripts/demarrer.sh`.
+
+### Ce que cela ne fait pas — dit franchement
+
+Seules les **pages** survivent. Tout ce qui exige le serveur reste indisponible
+tant que le téléphone est éteint :
+
+- le formulaire de demande d'intervention n'enregistre rien ;
+- l'assistant ne répond pas ;
+- l'espace client et l'administration sont inaccessibles ;
+- les photos envoyées ne s'affichent pas.
+
+Un visiteur voit donc le site, lit les services et **peut appeler** — ce qui est
+l'essentiel — mais ne peut pas déposer une demande. C'est un filet de sécurité,
+pas un remplacement d'hébergement.
+
+---
+
 ## Résumé : relancer le site après un redémarrage
 
 Trois lignes, et une seule session suffit :

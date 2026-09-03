@@ -306,17 +306,51 @@
     animation: shine 0.9s ease-out;
   }
 
-  /* Apparition à l'entrée dans le viewport (piloté par un IntersectionObserver). */
-  .reveal {
-    opacity: 0;
-    transform: translateY(26px);
-    transition:
-      opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1),
-      transform 0.75s cubic-bezier(0.16, 1, 0.3, 1);
+  /*
+   * Apparition à l'entrée dans le viewport (piloté par un IntersectionObserver).
+   *
+   * Le contenu n'est masqué que si le navigateur exécute réellement des
+   * scripts. Sans cette précaution, un visiteur dont le JavaScript ne se charge
+   * pas — extension de blocage, réseau coupé en cours de route, navigateur
+   * ancien — voit une page presque vide : l'animation masque ici la quasi-
+   * totalité du contenu du site.
+   *
+   * `scripting: none` couvre le JavaScript désactivé. Un navigateur trop ancien
+   * pour connaître cette caractéristique ne fait tout simplement pas
+   * correspondre la règle, et affiche le contenu : l'échec se fait toujours du
+   * bon côté.
+   */
+  @media (scripting: enabled) {
+    .reveal {
+      opacity: 0;
+      transform: translateY(26px);
+      transition:
+        opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1),
+        transform 0.75s cubic-bezier(0.16, 1, 0.3, 1);
+      /*
+       * Filet de sécurité pour les connexions lentes : tant que React n'a pas
+       * pris la main, le contenu apparaît de lui-même au bout de trois
+       * secondes. Dès que le premier composant est monté, la classe
+       * « js-pret » est posée sur <html> et annule ce repli — l'apparition au
+       * défilement reprend alors normalement.
+       */
+      animation: reveal-secours 0.6s cubic-bezier(0.16, 1, 0.3, 1) 3s forwards;
+    }
+    .js-pret .reveal {
+      animation: none;
+    }
+    .reveal.is-visible {
+      opacity: 1;
+      transform: none;
+      animation: none;
+    }
   }
-  .reveal.is-visible {
-    opacity: 1;
-    transform: none;
+
+  @keyframes reveal-secours {
+    to {
+      opacity: 1;
+      transform: none;
+    }
   }
 
   /* Indicateur « en train d'écrire » de l'assistant. */
@@ -404,6 +438,7 @@
   .reveal {
     opacity: 1;
     transform: none;
+    animation: none !important;
   }
 }
 

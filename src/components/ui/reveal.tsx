@@ -22,6 +22,10 @@ export function Reveal({ children, className = "", delay = 0, as: Tag = "div" }:
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
+    // Signale que React a pris la main. La feuille de style s'en sert pour
+    // annuler le repli qui rend le contenu visible sur les connexions lentes.
+    document.documentElement.classList.add("js-pret");
+
     const node = ref.current;
     if (!node) return;
     if (typeof IntersectionObserver === "undefined") {
