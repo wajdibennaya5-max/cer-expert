@@ -1,13 +1,27 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Icon } from "@/components/icons";
 import { button } from "@/components/ui/button";
 import { localePath, type Locale } from "@/lib/i18n/config";
 import type { Dictionary } from "@/lib/i18n/get-dictionary";
 
-const KEY = "wtsp.welcome.seen";
+/**
+ * Clé de mémorisation, partagée avec le formulaire de demande : une fois la
+ * demande envoyée, l'invitation n'a plus lieu d'être.
+ */
+export const WELCOME_SEEN_KEY = "wtsp.welcome.seen";
+
+/**
+ * Pages où l'invitation ne doit jamais apparaître.
+ *
+ * Elle propose de « créer une première demande » : l'afficher à quelqu'un qui
+ * est justement en train d'en remplir une, ou qui vient de l'envoyer, est
+ * incohérent — et le panneau recouvre les boutons de l'écran de confirmation.
+ */
+const PAGES_EXCLUES = ["/demande", "/espace-client"];
 
 /**
  * Message de bienvenue au premier passage.
@@ -29,23 +43,26 @@ export function WelcomeBonus({
   text: string;
 }) {
   const [visible, setVisible] = useState(false);
+  const pathname = usePathname();
+  const surPageExclue = PAGES_EXCLUES.some((suffixe) => pathname?.endsWith(suffixe));
 
   useEffect(() => {
+    if (surPageExclue) return;
     let seen = true;
     try {
-      seen = localStorage.getItem(KEY) === "1";
+      seen = localStorage.getItem(WELCOME_SEEN_KEY) === "1";
     } catch {
       seen = true;
     }
     if (seen) return;
     const timer = window.setTimeout(() => setVisible(true), 6500);
     return () => window.clearTimeout(timer);
-  }, []);
+  }, [surPageExclue]);
 
   function dismiss() {
     setVisible(false);
     try {
-      localStorage.setItem(KEY, "1");
+      localStorage.setItem(WELCOME_SEEN_KEY, "1");
     } catch {
       /* sans conséquence */
     }

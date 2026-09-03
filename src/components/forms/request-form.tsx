@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Icon } from "@/components/icons";
 import { button } from "@/components/ui/button";
 import { categories, services } from "@/content/services";
@@ -12,6 +12,7 @@ import { telHref } from "@/lib/site";
 import { interventionRequestSchema } from "@/lib/validation";
 import { MAX_UPLOAD_BYTES } from "@/lib/media";
 import { PhoneText } from "@/components/ui/phone-text";
+import { WELCOME_SEEN_KEY } from "@/components/site/welcome-bonus";
 
 interface Attachment {
   id: string;
@@ -31,6 +32,20 @@ export function RequestForm({ locale, dict, areas }: { locale: Locale; dict: Dic
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
   const [reference, setReference] = useState("");
+  const confirmationRef = useRef<HTMLDivElement | null>(null);
+
+  /*
+   * Amener la confirmation à l'écran une fois la demande envoyée.
+   *
+   * Un simple retour en haut de page ne suffit pas sur mobile : l'en-tête de
+   * la page occupe tout l'écran, et le client voyait le formulaire disparaître
+   * sans jamais apercevoir son numéro de référence — de quoi croire que rien
+   * ne s'était passé, et envoyer la demande une seconde fois.
+   */
+  useEffect(() => {
+    if (status !== "sent") return;
+    confirmationRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, [status]);
   const [formError, setFormError] = useState("");
 
   // Pré-sélection depuis une carte de service : /demande?service=chauffe-eau
@@ -152,8 +167,14 @@ export function RequestForm({ locale, dict, areas }: { locale: Locale; dict: Dic
       }
 
       setReference(data.reference);
+      // Le visiteur vient de faire ce que l'invitation lui proposait : elle
+      // n'a plus de raison de s'afficher, sur cette page ni sur les suivantes.
+      try {
+        localStorage.setItem(WELCOME_SEEN_KEY, "1");
+      } catch {
+        /* sans conséquence */
+      }
       setStatus("sent");
-      window.scrollTo({ top: 0, behavior: "smooth" });
     } catch {
       setStatus("error");
       setFormError(dict.request.errors.generic);
@@ -164,7 +185,12 @@ export function RequestForm({ locale, dict, areas }: { locale: Locale; dict: Dic
 
   if (status === "sent") {
     return (
-      <div className="mx-auto max-w-2xl rounded-3xl border border-emerald-200 bg-white p-8 text-center shadow-card sm:p-12">
+      <div
+        ref={confirmationRef}
+        // `scroll-mt-32` réserve la hauteur de l'en-tête fixe : sans elle, le
+        // titre de la confirmation se retrouve caché dessous.
+        className="mx-auto max-w-2xl scroll-mt-32 rounded-3xl border border-emerald-200 bg-white p-8 text-center shadow-card sm:p-12"
+      >
         <span className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-emerald-500 text-white shadow-[0_16px_40px_-12px_rgba(16,185,129,0.7)]">
           <Icon name="check" size={40} />
         </span>
