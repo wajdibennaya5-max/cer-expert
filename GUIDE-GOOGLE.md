@@ -108,6 +108,57 @@ absents ou injoignables.
 
 ---
 
+## Si la fiche est suspendue
+
+Une suspension n'est pas une fin : elle se conteste. Mais **le premier recours
+est de loin le plus efficace** — environ deux tiers aboutissent, contre un sur
+deux au deuxième et un sur quatre au troisième. Il ne faut donc surtout pas
+déposer un recours dans la précipitation.
+
+### Les trois erreurs à ne pas commettre
+
+1. **Créer une deuxième fiche.** C'est le réflexe naturel et c'est le pire :
+   Google y voit une tentative de contournement et suspend aussi la nouvelle.
+2. **Continuer à modifier la fiche suspendue.** Chaque modification pendant
+   l'examen brouille le dossier.
+3. **Déposer le recours avant d'avoir réuni les preuves.** Le formulaire
+   accepte les pièces jointes au moment de l'envoi ; sans elles, le recours
+   part affaibli et le meilleur essai est gaspillé.
+
+### Causes fréquentes chez un artisan
+
+| Cause | Correctif avant de faire appel |
+| --- | --- |
+| Adresse personnelle affichée alors qu'on se déplace | Passer en zone desservie et masquer l'adresse |
+| Site web changé plusieurs fois en peu de temps | Ne plus y toucher, et s'assurer qu'il répond |
+| Nom de domaine très récent, ou composé de chiffres | Vérifier que le site porte bien le nom de l'entreprise et le téléphone |
+| Nom de l'entreprise enrichi de mots-clés | Remettre le nom légal, sans « plombier » ni ville ajoutés |
+| Zone desservie démesurée | Se limiter à ce qu'on couvre réellement |
+| Plusieurs validations échouées d'affilée | Laisser retomber, ne pas relancer en boucle |
+
+### Pièces à réunir avant le recours
+
+Pour une activité de déplacement, sans local ouvert au public :
+
+- patente ou registre de commerce, au nom de l'entreprise ;
+- une facture d'électricité, d'eau ou de téléphone, ou un contrat de bail ;
+- des photos datées du véhicule de service, de l'outillage, du stock ;
+- un carnet de factures ou des devis à en-tête, **numéros fiscaux masqués** ;
+- une photo de vêtement de travail, d'autocollant ou de carte de visite.
+
+### Déposer le recours
+
+L'outil de recours est accessible depuis
+[la page d'aide « Corriger les fiches suspendues »](https://support.google.com/business/answer/4569145).
+Réponse en trois à cinq jours ouvrés en général.
+
+> **Point de vigilance propre à ce site :** un examinateur ouvrira l'adresse
+> déclarée en « Site Web ». Comme le site tourne sur un téléphone, il doit
+> rester allumé, branché et connecté pendant toute la durée de l'examen. Un
+> site injoignable au moment du contrôle fait échouer le recours.
+
+---
+
 ## Valider par vidéo
 
 
