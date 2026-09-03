@@ -140,10 +140,7 @@ export function Header({ locale, dict, announcement }: HeaderProps) {
         d'atteindre la page — et `aria-hidden` seul ne l'empêche pas, il ne fait
         que masquer aux lecteurs d'écran des éléments qui restent focalisables.
       */}
-      <div
-        className={`fixed inset-0 z-[60] lg:hidden ${menuOpen ? "" : "pointer-events-none"}`}
-        inert={!menuOpen}
-      >
+      <div className={`fixed inset-0 z-[60] lg:hidden ${menuOpen ? "" : "pointer-events-none"}`} inert={!menuOpen}>
         <div
           className={`absolute inset-0 bg-ink-950/70 backdrop-blur-sm transition-opacity duration-300 ${
             menuOpen ? "opacity-100" : "opacity-0"
