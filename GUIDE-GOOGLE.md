@@ -59,11 +59,26 @@ plan **Free**. Cloudflare donne deux serveurs de noms à déclarer chez le
 vendeur du domaine (ou dans le formulaire eu.org).
 
 **3. Créer l'adresse e-mail, gratuitement.** Cloudflare → votre domaine →
-**Email** → **Email Routing** → *Get started* → créer `contact@votredomaine`
-et le rediriger vers votre Gmail. Cloudflare pose les enregistrements MX seul.
+**Email Service** → **Email Routing**. Trois réglages, dans cet ordre :
 
-Vérifiez la redirection en vous envoyant un message d'essai **avant** de
-relancer Google : si l'essai n'arrive pas, le code n'arrivera pas non plus.
+1. **Destination Addresses** → ajouter son Gmail → **cliquer le lien de
+   vérification reçu par mail**. Tant que l'adresse n'est pas vérifiée, toutes
+   les règles restent inertes.
+2. **Routing rules** → **Catch-all** → passer l'action de **`Drop` à
+   `Send to an email`** et choisir le Gmail. ⚠️ **`Drop` est la valeur par
+   défaut, et elle supprime silencieusement tout le courrier du domaine.**
+   C'est le piège principal : rien n'échoue, rien ne rebondit, les messages
+   disparaissent simplement.
+3. Activer Email Routing. Cloudflare pose les MX, le DKIM et le SPF seul.
+
+Le catch-all vaut mieux qu'une adresse unique : **c'est Google qui choisit**
+l'adresse à laquelle il écrit (`info@`, `admin@`, `contact@`…), pas vous.
+
+**Vérifier avant d'aller chez Google.** S'envoyer un message d'essai ne suffit
+pas : un message parti de votre Gmail vers une adresse qui y revient est
+masqué comme doublon par Gmail, et l'absence de copie ne prouve rien. La preuve
+est dans **Email Routing → Activity Log**, qui affiche chaque message reçu avec
+son sort : `Forwarded` (bon) ou `Dropped` (le catch-all est resté sur *Drop*).
 
 **4. Relancer Google.** Dans la fiche : *Modifier* → **Site Web** →
 `https://votredomaine` → enregistrer. Puis reprendre la validation et choisir
