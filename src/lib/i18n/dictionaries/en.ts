@@ -237,6 +237,9 @@ export const en: Dictionary = {
       track: "Track my request",
       newRequest: "Make another request",
       urgentReminder: "Your request is flagged as urgent. For a real emergency, please call us directly.",
+      whatsapp: "Notify us on WhatsApp",
+      whatsappHint: "Optional — it alerts us straight away.",
+      whatsappMessage: "Hello, I have just sent a service request on your website. Reference:",
     },
     errors: {
       generic: "Sending failed. Try again, or call us directly.",

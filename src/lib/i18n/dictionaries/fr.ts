@@ -247,6 +247,9 @@ export const fr = {
       track: "Suivre ma demande",
       newRequest: "Faire une autre demande",
       urgentReminder: "Votre demande est marquée urgente. Pour une urgence réelle, appelez-nous directement.",
+      whatsapp: "Prévenir sur WhatsApp",
+      whatsappHint: "Facultatif — nous sommes alertés immédiatement.",
+      whatsappMessage: "Bonjour, je viens d'envoyer une demande d'intervention sur votre site. Référence :",
     },
     errors: {
       generic: "L'envoi a échoué. Réessayez, ou appelez-nous directement.",

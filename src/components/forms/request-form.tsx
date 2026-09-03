@@ -8,7 +8,7 @@ import { button } from "@/components/ui/button";
 import { categories, services } from "@/content/services";
 import { localePath, type Locale } from "@/lib/i18n/config";
 import type { Dictionary } from "@/lib/i18n/get-dictionary";
-import { telHref } from "@/lib/site";
+import { site, telHref } from "@/lib/site";
 import { interventionRequestSchema } from "@/lib/validation";
 import { MAX_UPLOAD_BYTES } from "@/lib/media";
 import { PhoneText } from "@/components/ui/phone-text";
@@ -211,6 +211,27 @@ export function RequestForm({ locale, dict, areas }: { locale: Locale; dict: Dic
             {dict.request.success.urgentReminder}
           </p>
         ) : null}
+
+        {/*
+          Signalement WhatsApp, facultatif.
+          La demande est déjà enregistrée ; ce bouton ne sert qu'à prévenir
+          l'artisan sans délai, sur le canal qu'il consulte réellement. Il ne
+          demande aucun service tiers, aucune clé, et fonctionne même si le
+          serveur s'arrête juste après. La référence part avec le message : elle
+          suffit à retrouver la demande dans la console.
+        */}
+        <a
+          href={`https://wa.me/${site.phone.whatsapp}?text=${encodeURIComponent(
+            `${dict.request.success.whatsappMessage} ${reference}`,
+          )}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-full bg-emerald-700 px-6 py-3.5 text-base font-bold text-white shadow-lg transition hover:bg-emerald-800 sm:w-auto"
+        >
+          <Icon name="whatsapp" size={19} />
+          {dict.request.success.whatsapp}
+        </a>
+        <p className="mt-2 text-xs text-slate-500">{dict.request.success.whatsappHint}</p>
 
         <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:justify-center">
           <a href={telHref} className={button("volt", "lg")}>
