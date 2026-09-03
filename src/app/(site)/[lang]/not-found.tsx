@@ -28,8 +28,8 @@ export default function NotFound() {
         <p className="font-display text-[6rem] font-extrabold leading-none text-transparent [-webkit-text-stroke:2px_rgba(34,204,238,0.6)] sm:text-[9rem]">
           404
         </p>
-        <h1 className="mt-4 text-2xl font-extrabold text-white sm:text-3xl">{dict.common.error}</h1>
-        <p className="mx-auto mt-3 max-w-md text-sm leading-relaxed text-slate-400">{dict.contact.subtitle}</p>
+        <h1 className="mt-4 text-2xl font-extrabold text-white sm:text-3xl">{dict.common.notFoundTitle}</h1>
+        <p className="mx-auto mt-3 max-w-md text-sm leading-relaxed text-slate-400">{dict.common.notFoundText}</p>
 
         <div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
           <Link href={localePath(locale)} className={button("primary", "lg")}>

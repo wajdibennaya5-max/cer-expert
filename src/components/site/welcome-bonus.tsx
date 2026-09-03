@@ -15,13 +15,21 @@ import type { Dictionary } from "@/lib/i18n/get-dictionary";
 export const WELCOME_SEEN_KEY = "wtsp.welcome.seen";
 
 /**
- * Pages où l'invitation ne doit jamais apparaître.
+ * L'invitation ne paraît que sur la page d'accueil.
  *
- * Elle propose de « créer une première demande » : l'afficher à quelqu'un qui
- * est justement en train d'en remplir une, ou qui vient de l'envoyer, est
- * incohérent — et le panneau recouvre les boutons de l'écran de confirmation.
+ * C'est un panneau flottant : sur une page courte, il recouvre les boutons —
+ * l'appel téléphonique sur une page introuvable, les actions de l'écran de
+ * confirmation après une demande. Et son message, « créez votre première
+ * demande », n'a de sens que pour un visiteur qui découvre le site, pas pour
+ * celui qui remplit déjà le formulaire.
+ *
+ * La page d'accueil est assez longue pour l'accueillir sans rien masquer, et
+ * c'est là qu'arrive un premier visiteur. Une adresse d'accueil ne comporte
+ * qu'un segment : la langue.
  */
-const PAGES_EXCLUES = ["/demande", "/espace-client"];
+function estPageAccueil(pathname: string | null): boolean {
+  return (pathname ?? "").split("/").filter(Boolean).length === 1;
+}
 
 /**
  * Message de bienvenue au premier passage.
@@ -44,10 +52,10 @@ export function WelcomeBonus({
 }) {
   const [visible, setVisible] = useState(false);
   const pathname = usePathname();
-  const surPageExclue = PAGES_EXCLUES.some((suffixe) => pathname?.endsWith(suffixe));
+  const surAccueil = estPageAccueil(pathname);
 
   useEffect(() => {
-    if (surPageExclue) return;
+    if (!surAccueil) return;
     let seen = true;
     try {
       seen = localStorage.getItem(WELCOME_SEEN_KEY) === "1";
@@ -57,7 +65,7 @@ export function WelcomeBonus({
     if (seen) return;
     const timer = window.setTimeout(() => setVisible(true), 6500);
     return () => window.clearTimeout(timer);
-  }, [surPageExclue]);
+  }, [surAccueil]);
 
   function dismiss() {
     setVisible(false);
