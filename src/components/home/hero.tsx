@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Icon } from "@/components/icons";
 import { HouseSystemsScene } from "@/components/illustrations";
 import { AssistantTrigger } from "@/components/assistant/assistant-button";
+import { ServiceSearch } from "@/components/home/service-search";
 import { button } from "@/components/ui/button";
 import { services } from "@/content/services";
 import { localePath, type Locale } from "@/lib/i18n/config";
@@ -22,7 +23,10 @@ export function Hero({ locale, dict, areaCount }: { locale: Locale; dict: Dictio
       <div className="tech-grid" aria-hidden="true" />
 
       <div className="container-page relative grid items-center gap-14 lg:grid-cols-12 lg:gap-10">
-        <div className="lg:col-span-6 xl:col-span-6">
+        {/* `min-w-0` empêche la colonne de grille de se dimensionner sur le
+            contenu le plus large : sans lui, un champ de saisie ou un mot long
+            fait déborder toute la colonne sur les petits écrans. */}
+        <div className="min-w-0 lg:col-span-6 xl:col-span-6">
           <p className="inline-flex items-center gap-2 rounded-full border border-white/12 bg-white/5 px-4 py-2 text-[0.7rem] font-semibold uppercase tracking-[0.16em] text-aqua-200 backdrop-blur-sm sm:text-xs">
             <span className="relative flex h-2 w-2">
               <span
@@ -46,7 +50,18 @@ export function Hero({ locale, dict, areaCount }: { locale: Locale; dict: Dictio
             {dict.hero.subtitle}
           </p>
 
-          <div className="mt-9 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+          {/*
+            Recherche avant les boutons.
+            Un visiteur arrive avec un problème en tête, pas avec le nom d'une
+            prestation. Lui offrir d'abord un champ où écrire son mot — « fuite »,
+            « disjoncte », « bouché » — le mène en un geste à la bonne page,
+            là où trois boutons génériques le laissent chercher.
+          */}
+          <div className="w-full max-w-xl min-w-0">
+            <ServiceSearch locale={locale} dict={dict} />
+          </div>
+
+          <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
             <a href={telHref} data-cta="call-hero" className={button("volt", "xl", "w-full sm:w-auto")}>
               <Icon name="phone" size={20} />
               {dict.cta.callNow}

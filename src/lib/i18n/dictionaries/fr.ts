@@ -67,6 +67,14 @@ export const fr = {
     seeAll: "Voir tous les services",
     email: "Envoyer un e-mail",
   },
+  search: {
+    label: "Quel est votre problème ?",
+    placeholder: "Ex. fuite d'eau, chauffe-eau, disjoncteur…",
+    resultsLabel: "Services correspondants",
+    none: "Aucun service ne porte ce nom. Décrivez votre problème : nous nous en occupons.",
+    describe: "Décrire mon problème",
+    seeService: "Voir ce service",
+  },
   hero: {
     badge: "Plomberie • Électricité • Dépannage à domicile",
     titleLine1: "Un problème de plomberie",

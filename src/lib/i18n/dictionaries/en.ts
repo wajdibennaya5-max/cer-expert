@@ -66,6 +66,14 @@ export const en: Dictionary = {
     seeAll: "See all services",
     email: "Send an e-mail",
   },
+  search: {
+    label: "What is the problem?",
+    placeholder: "e.g. water leak, water heater, breaker…",
+    resultsLabel: "Matching services",
+    none: "No service goes by that name. Describe the problem — we will handle it.",
+    describe: "Describe my problem",
+    seeService: "View this service",
+  },
   hero: {
     badge: "Plumbing • Electrical • Home call-outs",
     titleLine1: "A plumbing problem",
