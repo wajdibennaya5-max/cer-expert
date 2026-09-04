@@ -14,7 +14,14 @@ pour suivre chaque intervention du premier appel à la fin du chantier.
 Deux points, deux minutes :
 
 1. **Le mot de passe d'administration.** Sans configuration, le compte de
-   développement `admin / admin` est actif. Voir § Sécurité.
+   développement `admin / admin` est actif. Pour le définir ou le changer :
+
+   ```bash
+   bash scripts/mot-de-passe.sh
+   ```
+
+   La saisie est masquée, demandée deux fois, et `.env.local` est mis à jour
+   sur place. Voir § Sécurité.
 2. **La clé de session** (`SESSION_SECRET`). Sans elle, une valeur de
    développement connue est utilisée. Voir § Sécurité.
 
