@@ -13,6 +13,7 @@ import { interventionRequestSchema } from "@/lib/validation";
 import { MAX_UPLOAD_BYTES } from "@/lib/media";
 import { PhoneText } from "@/components/ui/phone-text";
 import { WELCOME_SEEN_KEY } from "@/components/site/welcome-bonus";
+import { remonterVers } from "@/lib/scroll";
 
 interface Attachment {
   id: string;
@@ -35,6 +36,80 @@ export function RequestForm({ locale, dict, areas }: { locale: Locale; dict: Dic
   const confirmationRef = useRef<HTMLDivElement | null>(null);
 
   /*
+   * Parcours en trois étapes.
+   *
+   * Une seule question à la fois : un long formulaire décourage sur un écran de
+   * téléphone, alors qu'une suite d'étapes courtes se remplit sans y penser.
+   * L'ordre compte autant que le découpage — le besoin d'abord, les coordonnées
+   * en dernier. On demande le nom et le téléphone à quelqu'un qui a déjà décrit
+   * son problème et choisi son créneau : il est engagé, il termine. L'inverse
+   * fait fuir dès le premier champ.
+   *
+   * Les étapes masquées le sont par l'attribut `hidden`, jamais démontées : les
+   * valeurs déjà saisies doivent rester dans le formulaire pour partir à
+   * l'envoi, et un champ en `display: none` reste hors du parcours clavier.
+   */
+  const NOMBRE_ETAPES = 3;
+  const [etape, setEtape] = useState(1);
+  const formulaireRef = useRef<HTMLFormElement | null>(null);
+  const hautRef = useRef<HTMLDivElement | null>(null);
+
+  /** Champs sans lesquels l'étape ne peut pas être quittée. */
+  function champsObligatoires(numero: number): { nom: string; message: string }[] {
+    if (numero === 1) return [{ nom: "description", message: dict.request.errors.required }];
+    if (numero === 3) {
+      return [
+        { nom: "name", message: dict.request.errors.required },
+        { nom: "phone", message: dict.request.errors.required },
+      ];
+    }
+    return [];
+  }
+
+  /** Contrôle l'étape courante ; renvoie `true` si l'on peut avancer. */
+  function etapeValide(numero: number): boolean {
+    const formulaire = formulaireRef.current;
+    if (!formulaire) return true;
+    const donnees = new FormData(formulaire);
+    const manquants: Record<string, string> = {};
+    for (const { nom, message } of champsObligatoires(numero)) {
+      if (!String(donnees.get(nom) ?? "").trim()) manquants[nom] = message;
+    }
+    setErrors((actuels) => ({ ...actuels, ...manquants }));
+    return Object.keys(manquants).length === 0;
+  }
+
+  function allerA(numero: number) {
+    setEtape(numero);
+    setFormError("");
+  }
+
+  /*
+   * Remonter en haut du formulaire après un changement d'étape.
+   *
+   * Le défilement doit venir après le rendu, pas pendant : changer d'étape
+   * change la hauteur de la page, et une position calculée avant ce
+   * changement tombe à côté — la barre de progression se retrouvait sous
+   * l'en-tête fixe. Le premier rendu est ignoré, sinon la page sauterait à
+   * l'arrivée du visiteur.
+   */
+  const premierRenduRef = useRef(true);
+  useEffect(() => {
+    if (premierRenduRef.current) {
+      premierRenduRef.current = false;
+      return;
+    }
+    remonterVers(hautRef.current);
+  }, [etape]);
+
+  function suivante() {
+    if (!etapeValide(etape)) return;
+    allerA(Math.min(etape + 1, NOMBRE_ETAPES));
+  }
+
+  const titresEtapes = [dict.request.sectionProblem, dict.request.sectionWhen, dict.request.sectionContact];
+
+  /*
    * Amener la confirmation à l'écran une fois la demande envoyée.
    *
    * Un simple retour en haut de page ne suffit pas sur mobile : l'en-tête de
@@ -44,7 +119,7 @@ export function RequestForm({ locale, dict, areas }: { locale: Locale; dict: Dic
    */
   useEffect(() => {
     if (status !== "sent") return;
-    confirmationRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    remonterVers(confirmationRef.current);
   }, [status]);
   const [formError, setFormError] = useState("");
 
@@ -187,9 +262,7 @@ export function RequestForm({ locale, dict, areas }: { locale: Locale; dict: Dic
     return (
       <div
         ref={confirmationRef}
-        // `scroll-mt-32` réserve la hauteur de l'en-tête fixe : sans elle, le
-        // titre de la confirmation se retrouve caché dessous.
-        className="mx-auto max-w-2xl scroll-mt-32 rounded-3xl border border-emerald-200 bg-white p-8 text-center shadow-card sm:p-12"
+        className="mx-auto max-w-2xl rounded-3xl border border-emerald-200 bg-white p-8 text-center shadow-card sm:p-12"
       >
         <span className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-emerald-500 text-white shadow-[0_16px_40px_-12px_rgba(16,185,129,0.7)]">
           <Icon name="check" size={40} />
@@ -274,285 +347,335 @@ export function RequestForm({ locale, dict, areas }: { locale: Locale; dict: Dic
   }
 
   return (
-    <form onSubmit={handleSubmit} noValidate className="mx-auto max-w-3xl space-y-6">
-      {/* ---------------------------------------------------- coordonnées */}
-      <div className="rounded-3xl border border-mist-200 bg-white p-6 shadow-card sm:p-8">
-        <fieldset>
-          <legend className="flex items-center gap-2.5 text-base font-bold text-ink-900">
-            <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-aqua-500 text-white">
-              <Icon name="user" size={17} />
-            </span>
-            {dict.request.sectionContact}
-          </legend>
-
-          <div className="mt-5 grid gap-5 sm:grid-cols-2">
-            <div>
-              <label htmlFor="name" className={label}>
-                {dict.request.fields.name} <span className="text-red-500">*</span>
-              </label>
-              <input
-                id="name"
-                name="name"
-                required
-                autoComplete="name"
-                placeholder={dict.request.fields.namePlaceholder}
-                className={field}
-                aria-invalid={Boolean(errors.name)}
+    <form onSubmit={handleSubmit} noValidate ref={formulaireRef} className="mx-auto max-w-3xl space-y-6">
+      {/*
+        Progression.
+        Volontairement discrète : chaque carte d'étape porte déjà son titre et
+        son icône. Répéter ce titre ici n'apprenait rien et occupait, sur un
+        écran de téléphone, la place d'un champ.
+      */}
+      <div ref={hautRef}>
+        <div className="mb-2 flex items-center justify-between gap-4">
+          <p className="text-xs font-bold uppercase tracking-[0.16em] text-slate-500">
+            {dict.request.stepLabel} <bdi dir="ltr">{`${etape}/${NOMBRE_ETAPES}`}</bdi>
+          </p>
+          <ol className="flex items-center gap-1.5" aria-hidden="true">
+            {titresEtapes.map((titre, index) => (
+              <li
+                key={titre}
+                className={`h-1.5 rounded-full transition-all duration-500 ${
+                  index + 1 === etape ? "w-7 bg-aqua-600" : index + 1 < etape ? "w-4 bg-aqua-300" : "w-4 bg-mist-200"
+                }`}
               />
-              <ErrorText name="name" />
-            </div>
-            <div>
-              <label htmlFor="phone" className={label}>
-                {dict.request.fields.phone} <span className="text-red-500">*</span>
-              </label>
-              <input
-                id="phone"
-                name="phone"
-                type="tel"
-                inputMode="tel"
-                required
-                autoComplete="tel"
-                placeholder={dict.request.fields.phonePlaceholder}
-                className={field}
-                aria-invalid={Boolean(errors.phone)}
-              />
-              <ErrorText name="phone" />
-            </div>
-            <div className="sm:col-span-2">
-              <label htmlFor="email" className={label}>
-                {dict.request.fields.email}{" "}
-                <span className="font-normal text-slate-500">({dict.request.optional})</span>
-              </label>
-              <input
-                id="email"
-                name="email"
-                type="email"
-                autoComplete="email"
-                placeholder={dict.request.fields.emailPlaceholder}
-                className={field}
-                aria-invalid={Boolean(errors.email)}
-              />
-              <ErrorText name="email" />
-            </div>
-          </div>
-        </fieldset>
+            ))}
+          </ol>
+        </div>
+        <div
+          role="progressbar"
+          aria-label={dict.request.stepProgress}
+          aria-valuemin={1}
+          aria-valuemax={NOMBRE_ETAPES}
+          aria-valuenow={etape}
+          aria-valuetext={`${dict.request.stepLabel} ${etape}/${NOMBRE_ETAPES} — ${titresEtapes[etape - 1]}`}
+          className="h-1.5 w-full overflow-hidden rounded-full bg-mist-200"
+        >
+          <div
+            className="h-full rounded-full bg-gradient-to-r from-aqua-500 to-aqua-600 transition-[width] duration-500"
+            style={{ width: `${(etape / NOMBRE_ETAPES) * 100}%` }}
+          />
+        </div>
       </div>
 
-      {/* --------------------------------------------------------- besoin */}
-      <div className="rounded-3xl border border-mist-200 bg-white p-6 shadow-card sm:p-8">
-        <fieldset>
-          <legend className="flex items-center gap-2.5 text-base font-bold text-ink-900">
-            <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-volt-500 text-white">
-              <Icon name="wrench" size={17} />
-            </span>
-            {dict.request.sectionProblem}
-          </legend>
-
-          <div className="mt-5 space-y-5">
-            <div>
-              <label htmlFor="serviceSlug" className={label}>
-                {dict.request.fields.service} <span className="text-red-500">*</span>
-              </label>
-              <select
-                id="serviceSlug"
-                name="serviceSlug"
-                value={serviceSlug}
-                onChange={(event) => setServiceSlug(event.target.value)}
-                className={field}
-              >
-                <option value="autre">{dict.request.fields.serviceOther}</option>
-                <optgroup label={categories.plomberie.label[locale]}>
-                  {grouped.plomberie.map((service) => (
-                    <option key={service.slug} value={service.slug}>
-                      {service.name[locale]}
-                    </option>
-                  ))}
-                </optgroup>
-                <optgroup label={categories.electricite.label[locale]}>
-                  {grouped.electricite.map((service) => (
-                    <option key={service.slug} value={service.slug}>
-                      {service.name[locale]}
-                    </option>
-                  ))}
-                </optgroup>
-              </select>
-              <ErrorText name="serviceSlug" />
-            </div>
-
-            <div>
-              <label htmlFor="description" className={label}>
-                {dict.request.fields.description} <span className="text-red-500">*</span>
-              </label>
-              <textarea
-                id="description"
-                name="description"
-                required
-                rows={5}
-                maxLength={2000}
-                placeholder={dict.request.fields.descriptionPlaceholder}
-                className={`${field} resize-y`}
-                aria-invalid={Boolean(errors.description)}
-              />
-              <ErrorText name="description" />
-            </div>
-
-            <div>
-              <span className={label}>
-                {dict.request.fields.urgency} <span className="text-red-500">*</span>
+      {/* ═══ Étape 1 — le besoin ═══ */}
+      <div hidden={etape !== 1}>
+        {/* --------------------------------------------------------- besoin */}
+        <div className="rounded-3xl border border-mist-200 bg-white p-6 shadow-card sm:p-8">
+          <fieldset>
+            <legend className="flex items-center gap-2.5 text-base font-bold text-ink-900">
+              <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-volt-500 text-white">
+                <Icon name="wrench" size={17} />
               </span>
-              <div className="grid gap-3 sm:grid-cols-2">
-                {urgencyKeys.map((key) => {
-                  const selected = urgency === key;
-                  return (
-                    <label
-                      key={key}
-                      className={`flex cursor-pointer items-start gap-3 rounded-2xl border-2 p-4 transition ${
-                        selected
-                          ? key === "emergency"
-                            ? "border-red-400 bg-red-50"
-                            : "border-aqua-400 bg-aqua-50"
-                          : "border-mist-200 bg-white hover:border-mist-300"
-                      }`}
-                    >
-                      <input
-                        type="radio"
-                        name="urgency"
-                        value={key}
-                        checked={selected}
-                        onChange={() => setUrgency(key)}
-                        className="mt-1 h-4 w-4 accent-aqua-500"
-                      />
-                      <span>
-                        <span className="block text-sm font-bold text-ink-900">{dict.request.urgency[key]}</span>
-                        <span className="mt-0.5 block text-xs text-slate-500">
-                          {dict.request.urgency[`${key}Hint` as keyof typeof dict.request.urgency]}
+              {dict.request.sectionProblem}
+            </legend>
+
+            <div className="mt-5 space-y-5">
+              <div>
+                <label htmlFor="serviceSlug" className={label}>
+                  {dict.request.fields.service} <span className="text-red-500">*</span>
+                </label>
+                <select
+                  id="serviceSlug"
+                  name="serviceSlug"
+                  value={serviceSlug}
+                  onChange={(event) => setServiceSlug(event.target.value)}
+                  className={field}
+                >
+                  <option value="autre">{dict.request.fields.serviceOther}</option>
+                  <optgroup label={categories.plomberie.label[locale]}>
+                    {grouped.plomberie.map((service) => (
+                      <option key={service.slug} value={service.slug}>
+                        {service.name[locale]}
+                      </option>
+                    ))}
+                  </optgroup>
+                  <optgroup label={categories.electricite.label[locale]}>
+                    {grouped.electricite.map((service) => (
+                      <option key={service.slug} value={service.slug}>
+                        {service.name[locale]}
+                      </option>
+                    ))}
+                  </optgroup>
+                </select>
+                <ErrorText name="serviceSlug" />
+              </div>
+
+              <div>
+                <label htmlFor="description" className={label}>
+                  {dict.request.fields.description} <span className="text-red-500">*</span>
+                </label>
+                <textarea
+                  id="description"
+                  name="description"
+                  required
+                  rows={5}
+                  maxLength={2000}
+                  placeholder={dict.request.fields.descriptionPlaceholder}
+                  className={`${field} resize-y`}
+                  aria-invalid={Boolean(errors.description)}
+                />
+                <ErrorText name="description" />
+              </div>
+
+              <div>
+                <span className={label}>
+                  {dict.request.fields.urgency} <span className="text-red-500">*</span>
+                </span>
+                <div className="grid gap-3 sm:grid-cols-2">
+                  {urgencyKeys.map((key) => {
+                    const selected = urgency === key;
+                    return (
+                      <label
+                        key={key}
+                        className={`flex cursor-pointer items-start gap-3 rounded-2xl border-2 p-4 transition ${
+                          selected
+                            ? key === "emergency"
+                              ? "border-red-400 bg-red-50"
+                              : "border-aqua-400 bg-aqua-50"
+                            : "border-mist-200 bg-white hover:border-mist-300"
+                        }`}
+                      >
+                        <input
+                          type="radio"
+                          name="urgency"
+                          value={key}
+                          checked={selected}
+                          onChange={() => setUrgency(key)}
+                          className="mt-1 h-4 w-4 accent-aqua-500"
+                        />
+                        <span>
+                          <span className="block text-sm font-bold text-ink-900">{dict.request.urgency[key]}</span>
+                          <span className="mt-0.5 block text-xs text-slate-500">
+                            {dict.request.urgency[`${key}Hint` as keyof typeof dict.request.urgency]}
+                          </span>
                         </span>
-                      </span>
-                    </label>
-                  );
-                })}
+                      </label>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {urgency === "emergency" ? (
+                <p className="flex items-start gap-2.5 rounded-2xl border border-volt-300 bg-volt-50 p-4 text-sm text-volt-800">
+                  <Icon name="alert" size={18} className="mt-0.5 shrink-0" />
+                  <span>
+                    {dict.emergency.text}{" "}
+                    <a href={telHref} className="font-bold underline underline-offset-2">
+                      <PhoneText />
+                    </a>
+                  </span>
+                </p>
+              ) : null}
+
+              <div>
+                <span className={label}>
+                  {dict.request.fields.photos}{" "}
+                  <span className="font-normal text-slate-500">({dict.request.optional})</span>
+                </span>
+                <label className="flex cursor-pointer flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-mist-300 bg-mist-50 px-4 py-7 text-center transition hover:border-aqua-400 hover:bg-aqua-50">
+                  <span className="flex h-11 w-11 items-center justify-center rounded-full bg-white text-aqua-600 shadow-sm">
+                    <Icon name="camera" size={21} />
+                  </span>
+                  <span className="text-sm font-semibold text-ink-900">{dict.request.fields.addPhotos}</span>
+                  <span className="text-xs text-slate-500">{dict.request.fields.photosHint}</span>
+                  <input
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp"
+                    multiple
+                    className="hidden"
+                    onChange={(event) => {
+                      const files = Array.from(event.target.files ?? []);
+                      event.target.value = "";
+                      void uploadPhotos(files);
+                    }}
+                  />
+                </label>
+                {uploading ? <p className="mt-2 text-xs text-slate-500">{dict.common.loading}</p> : null}
+                <ErrorText name="photos" />
+
+                {photos.length > 0 ? (
+                  <ul className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3">
+                    {photos.map((photo) => (
+                      <li
+                        key={photo.id}
+                        className="group relative overflow-hidden rounded-2xl border border-mist-200"
+                      >
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={`/api/media/${photo.id}`}
+                          alt={photo.name}
+                          className="h-24 w-full object-cover"
+                          loading="lazy"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setPhotos((current) => current.filter((item) => item.id !== photo.id))}
+                          aria-label={`${dict.request.fields.removePhoto} ${photo.name}`}
+                          className="absolute end-1.5 top-1.5 flex h-7 w-7 items-center justify-center rounded-full bg-ink-950/70 text-white transition hover:bg-red-600"
+                        >
+                          <Icon name="close" size={14} />
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                ) : null}
               </div>
             </div>
-
-            {urgency === "emergency" ? (
-              <p className="flex items-start gap-2.5 rounded-2xl border border-volt-300 bg-volt-50 p-4 text-sm text-volt-800">
-                <Icon name="alert" size={18} className="mt-0.5 shrink-0" />
-                <span>
-                  {dict.emergency.text}{" "}
-                  <a href={telHref} className="font-bold underline underline-offset-2">
-                    <PhoneText />
-                  </a>
-                </span>
-              </p>
-            ) : null}
-
-            <div>
-              <span className={label}>
-                {dict.request.fields.photos}{" "}
-                <span className="font-normal text-slate-500">({dict.request.optional})</span>
-              </span>
-              <label className="flex cursor-pointer flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-mist-300 bg-mist-50 px-4 py-7 text-center transition hover:border-aqua-400 hover:bg-aqua-50">
-                <span className="flex h-11 w-11 items-center justify-center rounded-full bg-white text-aqua-600 shadow-sm">
-                  <Icon name="camera" size={21} />
-                </span>
-                <span className="text-sm font-semibold text-ink-900">{dict.request.fields.addPhotos}</span>
-                <span className="text-xs text-slate-500">{dict.request.fields.photosHint}</span>
-                <input
-                  type="file"
-                  accept="image/jpeg,image/png,image/webp"
-                  multiple
-                  className="hidden"
-                  onChange={(event) => {
-                    const files = Array.from(event.target.files ?? []);
-                    event.target.value = "";
-                    void uploadPhotos(files);
-                  }}
-                />
-              </label>
-              {uploading ? <p className="mt-2 text-xs text-slate-500">{dict.common.loading}</p> : null}
-              <ErrorText name="photos" />
-
-              {photos.length > 0 ? (
-                <ul className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3">
-                  {photos.map((photo) => (
-                    <li key={photo.id} className="group relative overflow-hidden rounded-2xl border border-mist-200">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src={`/api/media/${photo.id}`}
-                        alt={photo.name}
-                        className="h-24 w-full object-cover"
-                        loading="lazy"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setPhotos((current) => current.filter((item) => item.id !== photo.id))}
-                        aria-label={`${dict.request.fields.removePhoto} ${photo.name}`}
-                        className="absolute end-1.5 top-1.5 flex h-7 w-7 items-center justify-center rounded-full bg-ink-950/70 text-white transition hover:bg-red-600"
-                      >
-                        <Icon name="close" size={14} />
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-              ) : null}
-            </div>
-          </div>
-        </fieldset>
+          </fieldset>
+        </div>
       </div>
 
-      {/* ---------------------------------------------------- quand et où */}
-      <div className="rounded-3xl border border-mist-200 bg-white p-6 shadow-card sm:p-8">
-        <fieldset>
-          <legend className="flex items-center gap-2.5 text-base font-bold text-ink-900">
-            <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-ink-900 text-white">
-              <Icon name="calendar" size={17} />
-            </span>
-            {dict.request.sectionWhen}
-          </legend>
+      {/* ═══ Étape 2 — quand et où ═══ */}
+      <div hidden={etape !== 2}>
+        {/* ---------------------------------------------------- quand et où */}
+        <div className="rounded-3xl border border-mist-200 bg-white p-6 shadow-card sm:p-8">
+          <fieldset>
+            <legend className="flex items-center gap-2.5 text-base font-bold text-ink-900">
+              <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-ink-900 text-white">
+                <Icon name="calendar" size={17} />
+              </span>
+              {dict.request.sectionWhen}
+            </legend>
 
-          <div className="mt-5 grid gap-5 sm:grid-cols-2">
-            <div>
-              <label htmlFor="area" className={label}>
-                {dict.request.fields.area}
-              </label>
-              <select id="area" name="area" className={field} defaultValue="">
-                <option value="">{dict.request.fields.areaPlaceholder}</option>
-                {areas.map((area) => (
-                  <option key={area} value={area}>
-                    {area}
-                  </option>
-                ))}
-              </select>
+            <div className="mt-5 grid gap-5 sm:grid-cols-2">
+              <div>
+                <label htmlFor="area" className={label}>
+                  {dict.request.fields.area}
+                </label>
+                <select id="area" name="area" className={field} defaultValue="">
+                  <option value="">{dict.request.fields.areaPlaceholder}</option>
+                  {areas.map((area) => (
+                    <option key={area} value={area}>
+                      {area}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label htmlFor="address" className={label}>
+                  {dict.request.fields.address}{" "}
+                  <span className="font-normal text-slate-500">({dict.request.optional})</span>
+                </label>
+                <input
+                  id="address"
+                  name="address"
+                  autoComplete="street-address"
+                  placeholder={dict.request.fields.addressPlaceholder}
+                  className={field}
+                />
+              </div>
+              <div>
+                <label htmlFor="preferredDate" className={label}>
+                  {dict.request.fields.date}{" "}
+                  <span className="font-normal text-slate-500">({dict.request.optional})</span>
+                </label>
+                <input id="preferredDate" name="preferredDate" type="date" min={today} className={field} />
+              </div>
+              <div>
+                <label htmlFor="preferredTime" className={label}>
+                  {dict.request.fields.time}{" "}
+                  <span className="font-normal text-slate-500">({dict.request.optional})</span>
+                </label>
+                <input id="preferredTime" name="preferredTime" type="time" className={field} />
+              </div>
             </div>
-            <div>
-              <label htmlFor="address" className={label}>
-                {dict.request.fields.address}{" "}
-                <span className="font-normal text-slate-500">({dict.request.optional})</span>
-              </label>
-              <input
-                id="address"
-                name="address"
-                autoComplete="street-address"
-                placeholder={dict.request.fields.addressPlaceholder}
-                className={field}
-              />
+          </fieldset>
+        </div>
+      </div>
+
+      {/* ═══ Étape 3 — les coordonnées ═══ */}
+      <div hidden={etape !== 3}>
+        {/* ---------------------------------------------------- coordonnées */}
+        <div className="rounded-3xl border border-mist-200 bg-white p-6 shadow-card sm:p-8">
+          <fieldset>
+            <legend className="flex items-center gap-2.5 text-base font-bold text-ink-900">
+              <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-aqua-500 text-white">
+                <Icon name="user" size={17} />
+              </span>
+              {dict.request.sectionContact}
+            </legend>
+
+            <div className="mt-5 grid gap-5 sm:grid-cols-2">
+              <div>
+                <label htmlFor="name" className={label}>
+                  {dict.request.fields.name} <span className="text-red-500">*</span>
+                </label>
+                <input
+                  id="name"
+                  name="name"
+                  required
+                  autoComplete="name"
+                  placeholder={dict.request.fields.namePlaceholder}
+                  className={field}
+                  aria-invalid={Boolean(errors.name)}
+                />
+                <ErrorText name="name" />
+              </div>
+              <div>
+                <label htmlFor="phone" className={label}>
+                  {dict.request.fields.phone} <span className="text-red-500">*</span>
+                </label>
+                <input
+                  id="phone"
+                  name="phone"
+                  type="tel"
+                  inputMode="tel"
+                  required
+                  autoComplete="tel"
+                  placeholder={dict.request.fields.phonePlaceholder}
+                  className={field}
+                  aria-invalid={Boolean(errors.phone)}
+                />
+                <ErrorText name="phone" />
+              </div>
+              <div className="sm:col-span-2">
+                <label htmlFor="email" className={label}>
+                  {dict.request.fields.email}{" "}
+                  <span className="font-normal text-slate-500">({dict.request.optional})</span>
+                </label>
+                <input
+                  id="email"
+                  name="email"
+                  type="email"
+                  autoComplete="email"
+                  placeholder={dict.request.fields.emailPlaceholder}
+                  className={field}
+                  aria-invalid={Boolean(errors.email)}
+                />
+                <ErrorText name="email" />
+              </div>
             </div>
-            <div>
-              <label htmlFor="preferredDate" className={label}>
-                {dict.request.fields.date}{" "}
-                <span className="font-normal text-slate-500">({dict.request.optional})</span>
-              </label>
-              <input id="preferredDate" name="preferredDate" type="date" min={today} className={field} />
-            </div>
-            <div>
-              <label htmlFor="preferredTime" className={label}>
-                {dict.request.fields.time}{" "}
-                <span className="font-normal text-slate-500">({dict.request.optional})</span>
-              </label>
-              <input id="preferredTime" name="preferredTime" type="time" className={field} />
-            </div>
-          </div>
-        </fieldset>
+          </fieldset>
+        </div>
       </div>
 
       {/* Champ piège anti-robot */}
@@ -577,14 +700,33 @@ export function RequestForm({ locale, dict, areas }: { locale: Locale; dict: Dic
           <span className="text-red-500">*</span> {dict.request.required}
         </p>
         <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
-          <a href={telHref} className={button("light", "lg", "border border-mist-200")}>
-            <Icon name="phone" size={18} />
-            {dict.cta.callNow}
-          </a>
-          <button type="submit" disabled={status === "sending"} className={button("primary", "lg", "min-w-52")}>
-            {status === "sending" ? dict.cta.sending : dict.request.submit}
-            {status === "sending" ? null : <Icon name="send" size={17} />}
-          </button>
+          {etape > 1 ? (
+            <button
+              type="button"
+              onClick={() => allerA(etape - 1)}
+              className={button("light", "lg", "border border-mist-200")}
+            >
+              <Icon name="chevronRight" size={17} className="rotate-180 rtl:rotate-0" />
+              {dict.request.stepBack}
+            </button>
+          ) : (
+            <a href={telHref} className={button("light", "lg", "border border-mist-200")}>
+              <Icon name="phone" size={18} />
+              {dict.cta.callNow}
+            </a>
+          )}
+
+          {etape < NOMBRE_ETAPES ? (
+            <button type="button" onClick={suivante} className={button("primary", "lg", "min-w-52")}>
+              {dict.request.stepNext}
+              <Icon name="chevronRight" size={17} className="rtl:rotate-180" />
+            </button>
+          ) : (
+            <button type="submit" disabled={status === "sending"} className={button("primary", "lg", "min-w-52")}>
+              {status === "sending" ? dict.cta.sending : dict.request.submit}
+              {status === "sending" ? null : <Icon name="send" size={17} />}
+            </button>
+          )}
         </div>
       </div>
     </form>

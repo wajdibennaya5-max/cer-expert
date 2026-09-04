@@ -201,6 +201,10 @@ export const fr = {
     sectionContact: "Vos coordonnées",
     sectionProblem: "Votre besoin",
     sectionWhen: "Quand et où",
+    stepLabel: "Étape",
+    stepNext: "Continuer",
+    stepBack: "Retour",
+    stepProgress: "Progression de la demande",
     fields: {
       name: "Nom et prénom",
       namePlaceholder: "Ex. Mohamed Ben Salah",
@@ -253,6 +257,7 @@ export const fr = {
     },
     errors: {
       generic: "L'envoi a échoué. Réessayez, ou appelez-nous directement.",
+      required: "Ce champ est nécessaire pour continuer.",
       rateLimited: "Trop de demandes envoyées depuis cet appareil. Patientez quelques minutes ou appelez-nous.",
       photoType: "Format d'image non accepté.",
       photoSize: "Photo trop lourde (5 Mo maximum).",

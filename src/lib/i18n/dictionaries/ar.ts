@@ -169,6 +169,10 @@ export const ar: Dictionary = {
     sectionContact: "معطياتك",
     sectionProblem: "حاجتك",
     sectionWhen: "متى وأين",
+    stepLabel: "الخطوة",
+    stepNext: "متابعة",
+    stepBack: "رجوع",
+    stepProgress: "تقدّم الطلب",
     fields: {
       name: "الاسم واللقب",
       namePlaceholder: "مثال: محمد بن صالح",
@@ -220,6 +224,7 @@ export const ar: Dictionary = {
     },
     errors: {
       generic: "فشل الإرسال. أعد المحاولة أو اتصل بنا مباشرة.",
+      required: "هذا الحقل ضروري للمتابعة.",
       rateLimited: "عدد كبير من الطلبات من هذا الجهاز. انتظر بضع دقائق أو اتصل بنا.",
       photoType: "صيغة الصورة غير مقبولة.",
       photoSize: "الصورة ثقيلة جدًا (5 ميغا كحد أقصى).",

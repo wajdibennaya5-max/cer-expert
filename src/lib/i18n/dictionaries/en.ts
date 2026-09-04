@@ -192,6 +192,10 @@ export const en: Dictionary = {
     sectionContact: "Your details",
     sectionProblem: "What you need",
     sectionWhen: "When and where",
+    stepLabel: "Step",
+    stepNext: "Continue",
+    stepBack: "Back",
+    stepProgress: "Request progress",
     fields: {
       name: "Full name",
       namePlaceholder: "e.g. Mohamed Ben Salah",
@@ -243,6 +247,7 @@ export const en: Dictionary = {
     },
     errors: {
       generic: "Sending failed. Try again, or call us directly.",
+      required: "This field is needed to continue.",
       rateLimited: "Too many requests from this device. Wait a few minutes or call us.",
       photoType: "Image format not accepted.",
       photoSize: "Photo too large (5 MB maximum).",
