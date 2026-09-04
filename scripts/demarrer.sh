@@ -20,21 +20,14 @@
 # ============================================================================
 set -u
 
-PORT="${PORT:-3000}"
 PROJECT="$(cd "$(dirname "$0")/.." && pwd)"
-SITE_LOG="$PROJECT/site.log"
-TUNNEL_LOG="$PROJECT/tunnel.log"
-SITE_PID="$PROJECT/.site.pid"
-TUNNEL_PID="$PROJECT/.tunnel.pid"
+# shellcheck source=scripts/commun.sh
+. "$PROJECT/scripts/commun.sh"
 
 cd "$PROJECT" || exit 1
 echo "→ Projet : $PROJECT"
 
 URL=""
-
-site_repond() {
-  curl -s -o /dev/null --max-time 3 "http://localhost:$PORT/fr"
-}
 
 # Interroge l'adresse publique ; renvoie le code HTTP, ou 000 si aucune réponse.
 tester() {
@@ -46,27 +39,20 @@ tester() {
 
 # ------------------------------------------------------------------ le site
 if site_repond; then
-  echo "→ Le site tourne déjà sur le port $PORT."
+  # Un serveur déjà lancé n'est gardé que s'il a lu la configuration actuelle.
+  # .env.local n'est lu qu'au démarrage : un serveur plus ancien que ce fichier
+  # travaille avec l'ancien identifiant et l'ancien mot de passe, et refuse la
+  # connexion à l'administration sans dire pourquoi.
+  if serveur_perime; then
+    echo "→ La configuration a changé depuis le démarrage du site."
+    echo "  Remplacement du serveur pour qu'il la prenne en compte…"
+    arreter_site || exit 1
+    demarrer_site || exit 1
+  else
+    echo "→ Le site tourne déjà sur le port $PORT."
+  fi
 else
-  if [ ! -d .next ]; then
-    echo "✗ Le site n'est pas construit. Lancez d'abord : npm run build"
-    exit 1
-  fi
-  echo "→ Démarrage du site…"
-  # Le binaire Next est lancé directement plutôt que via `npm start` : npm
-  # crée un processus intermédiaire, et l'arrêter laisserait le serveur en vie.
-  nohup "$PROJECT/node_modules/.bin/next" start -p "$PORT" > "$SITE_LOG" 2>&1 &
-  echo $! > "$SITE_PID"
-  for _ in $(seq 1 30); do
-    sleep 2
-    site_repond && break
-  done
-  if ! site_repond; then
-    echo "✗ Le site n'a pas démarré. Dernières lignes :"
-    tail -15 "$SITE_LOG"
-    exit 1
-  fi
-  echo "→ Site prêt."
+  demarrer_site || exit 1
 fi
 
 # ------------------------------------------------------- tunnel ngrok (fixe)

@@ -7,12 +7,49 @@ Aucune connaissance technique n'est nécessaire.
 
 ## 1. Se connecter
 
-Rendez-vous sur **votre-site.tn/admin**, saisissez votre identifiant et votre
+Rendez-vous sur **20122011.xyz/admin**, saisissez votre identifiant et votre
 mot de passe. La session reste ouverte 8 heures, puis se referme d'elle-même.
 
 > Si un bandeau orange apparaît en haut de la console, c'est que le mot de passe
 > par défaut est encore actif. Demandez à la personne qui a installé le site de
 > le remplacer avant d'ouvrir le site au public.
+
+### Changer le mot de passe
+
+Dans Termux, sur le téléphone qui héberge le site :
+
+```bash
+cd ~/wajdi-tayssir
+bash scripts/mot-de-passe.sh
+bash scripts/demarrer.sh
+```
+
+La saisie ne s'affiche pas pendant la frappe : c'est voulu. Le second ordre
+est indispensable — le site ne relit ce réglage qu'au démarrage.
+
+### La connexion est refusée
+
+Deux messages différents, deux causes différentes :
+
+| Message | Ce qui se passe | Quoi faire |
+|---|---|---|
+| **Trop de tentatives. Patientez quelques minutes.** | Le compteur anti-abus s'est déclenché après plusieurs essais ratés. Le mot de passe n'est pas en cause. | Attendre 15 minutes, ou redémarrer le site (le compteur repart de zéro) |
+| **Identifiants incorrects.** | L'identifiant ou le mot de passe ne correspond pas à ce que **le serveur en cours** connaît | Lancer le diagnostic ci-dessous |
+
+```bash
+cd ~/wajdi-tayssir
+bash scripts/verifier-admin.sh
+```
+
+Il demande le mot de passe, le compare à celui qui est enregistré, interroge le
+site, puis dit laquelle des trois causes possibles est la bonne — et propose de
+la corriger. Le piège le plus fréquent : un mot de passe changé alors que le
+site tournait déjà. Le fichier est à jour, mais le serveur lancé avant continue
+d'utiliser l'ancien. Il faut le relancer, pas le laisser tourner.
+
+> Le clavier du téléphone met souvent une majuscule au premier caractère sans
+> qu'on la voie. En cas de doute, appuyez une fois sur la touche majuscule
+> avant de taper.
 
 ---
 

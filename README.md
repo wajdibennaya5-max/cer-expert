@@ -147,7 +147,7 @@ src/
 └── middleware.ts             Routage linguistique
 
 Dockerfile, compose.yaml       Déploiement en conteneur (facultatif)
-scripts/                       Génération du mot de passe admin, jeu de démo
+scripts/                       Mise en ligne, mot de passe admin, diagnostic, jeu de démo
 ```
 
 **Deux mises en page racines.** Le site public et la console sont deux arbres
@@ -207,10 +207,23 @@ avis, statuts et rendez-vous.
 node -e "console.log(require('node:crypto').randomBytes(32).toString('hex'))"
 #    → à copier dans SESSION_SECRET
 
-# 2. Mot de passe d'administration
-npm run admin:password -- "un-mot-de-passe-long-et-unique"
-#    → affiche la ligne ADMIN_PASSWORD_HASH=... à copier telle quelle
+# 2. Identifiant et mot de passe d'administration
+bash scripts/mot-de-passe.sh
+#    → saisie masquée, .env.local mis à jour sur place
 ```
+
+Un mot de passe écrit **dans** une commande reste dans l'historique du terminal
+et, le temps de l'exécution, dans la liste des processus. `scripts/mot-de-passe.sh`
+le lit sur l'entrée standard pour cette raison. `npm run admin:password` reste
+disponible pour les scripts d'installation, mais il faut alors lui donner le mot
+de passe sur l'entrée standard, jamais en argument.
+
+**Le site ne lit `.env.local` qu'au démarrage.** Un mot de passe changé pendant
+que le site tourne n'est pris en compte qu'après `bash scripts/demarrer.sh`, qui
+détecte le fichier plus récent que le serveur et remplace celui-ci. En cas de
+connexion refusée, `bash scripts/verifier-admin.sh` distingue les trois causes
+possibles (mot de passe différent de celui enregistré, serveur périmé, fichier
+d'environnement prioritaire) et propose la correction.
 
 Ce qui est en place :
 

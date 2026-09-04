@@ -24,7 +24,9 @@ if [ ! -f "$CONF" ]; then
 fi
 
 # ------------------------------------------------------------ identifiant
-ACTUEL="$(grep -E '^ADMIN_USERNAME=' "$CONF" 2>/dev/null | head -1 | cut -d= -f2-)"
+# La dernière ligne, pas la première : en cas de doublon, c'est celle que
+# Next.js retient au chargement du fichier.
+ACTUEL="$(grep -E '^ADMIN_USERNAME=' "$CONF" 2>/dev/null | tail -1 | cut -d= -f2-)"
 if [ -n "$ACTUEL" ]; then
   echo "  Identifiant actuel : $ACTUEL"
   printf "  Entrée pour le garder, ou tapez-en un autre : "
@@ -54,6 +56,24 @@ if [ "${#MDP1}" -lt 10 ]; then
   echo "✗ Trop court : 10 caractères au minimum. Rien n'a été modifié."
   unset MDP1 MDP2
   exit 1
+fi
+
+# ------------------------------------------------------------- avertissement
+# Signalé, jamais refusé : c'est votre décision, pas celle du script. Mais un
+# mot de passe de cette liste est essayé dans les toutes premières secondes
+# par n'importe quel robot, et la console donne accès aux coordonnées de vos
+# clients.
+FAIBLE=0
+case "$(printf '%s' "$MDP1" | tr '[:upper:]' '[:lower:]')" in
+  azertyuiop|qwertyuiop|1234567890|0123456789|motdepasse*|password*|admin*|123456*|qwerty*|azerty*)
+    FAIBLE=1 ;;
+esac
+if [ "$FAIBLE" = "1" ]; then
+  echo
+  echo "  ⚠ Ce mot de passe fait partie des tout premiers essayés par les robots."
+  echo "    Il est enregistré quand même, mais changez-le dès que possible :"
+  echo "    quatre mots sans rapport font un mot de passe long et facile à"
+  echo "    retenir, par exemple  Marteau-Citron-Sfax-74"
 fi
 
 # Le mot de passe passe par l'entrée standard, jamais en argument : un argument
@@ -86,6 +106,12 @@ echo "   Identifiant   : $IDENTIFIANT"
 echo "   Mot de passe  : enregistré (empreinte irréversible)"
 echo "  ────────────────────────────────────────────────"
 echo
-echo "  Redémarrez le site pour que le changement prenne effet :"
+echo "  Le site ne lit ce fichier qu'au démarrage : relancez-le pour que le"
+echo "  changement prenne effet."
+echo
 echo "     bash scripts/demarrer.sh"
+echo
+echo "  En cas de refus à la connexion, ce script dit pourquoi :"
+echo
+echo "     bash scripts/verifier-admin.sh"
 echo

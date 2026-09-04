@@ -131,22 +131,32 @@ Faites-le en Wi-Fi.
 cp .env.example .env.local
 ```
 
-Générez les deux valeurs de sécurité :
+Choisissez l'identifiant et le mot de passe de l'administration. La saisie
+est masquée et le fichier est mis à jour tout seul :
+
+```bash
+bash scripts/mot-de-passe.sh
+```
+
+> N'écrivez jamais un mot de passe **dans** une commande : il resterait dans
+> l'historique du terminal, que n'importe qui peut faire défiler.
+
+Générez la clé de signature des sessions :
 
 ```bash
 node -e "console.log(require('node:crypto').randomBytes(32).toString('hex'))"
-npm run admin:password -- "votre-mot-de-passe-solide"
 ```
 
-Puis ouvrez le fichier (`nano .env.local`) et renseignez au minimum :
+Puis ouvrez le fichier (`nano .env.local`) et renseignez le reste :
 
 ```
 NEXT_PUBLIC_SITE_URL=https://votre-adresse-cloudflare.trycloudflare.com
-SESSION_SECRET=<le résultat de la première commande>
-ADMIN_USERNAME=wajdi
-ADMIN_PASSWORD_HASH=<la ligne affichée par la seconde commande>
+SESSION_SECRET=<le résultat de la commande ci-dessus>
 NEXT_PUBLIC_CONTACT_EMAIL=<votre vraie adresse e-mail>
 ```
+
+`ADMIN_USERNAME` et `ADMIN_PASSWORD_HASH` y sont déjà : le script les a
+écrits. N'y touchez pas.
 
 Dans `nano` : `Ctrl+O` puis `Entrée` pour enregistrer, `Ctrl+X` pour quitter.
 
@@ -539,6 +549,15 @@ proot-distro login ubuntu
 cd ~/wajdi-tayssir && bash scripts/demarrer.sh
 ```
 
+`demarrer.sh` remplace de lui-même un serveur lancé avant la dernière
+modification de `.env.local` : un changement de mot de passe est donc pris en
+compte sans rien faire de plus. Pour relancer le site seul en gardant le tunnel
+— et donc l'adresse — ouvert :
+
+```bash
+bash scripts/arreter.sh --site-seulement && bash scripts/demarrer.sh
+```
+
 Le site et le tunnel tournent en arrière-plan ; la session reste utilisable.
 Pour revoir leur état :
 
@@ -594,3 +613,22 @@ site est statique à 90 %.
 | Erreur **530** | Le tunnel n'est pas enregistré (QUIC bloqué par le réseau mobile) | `bash scripts/demarrer.sh`, qui force HTTP/2 |
 | Erreur **502** ou **503** | Le tunnel fonctionne mais le site est arrêté | `bash scripts/demarrer.sh` le redémarre |
 | `npm ci` très lent ou interrompu | Réseau mobile | Refaites-le en Wi-Fi |
+| **Trop de tentatives. Patientez quelques minutes.** (sur /admin) | Compteur anti-abus après plusieurs essais ratés — pas un mauvais mot de passe | Attendre 15 min, ou `bash scripts/demarrer.sh` |
+| **Identifiants incorrects.** alors que le mot de passe vient d'être changé | Le serveur tourne encore avec l'ancien fichier : il ne le relit qu'au démarrage | `bash scripts/verifier-admin.sh` |
+
+### Le mot de passe d'administration ne passe pas
+
+```bash
+cd ~/wajdi-tayssir
+bash scripts/verifier-admin.sh
+```
+
+Il demande le mot de passe (la frappe reste invisible), le compare à celui qui
+est enregistré, interroge le serveur en cours, puis dit laquelle des trois
+causes possibles est la bonne — et propose de la corriger sur place :
+
+1. le mot de passe enregistré n'est pas celui que vous croyez ;
+2. il est bon, mais le serveur a été lancé **avant** le changement ;
+3. un autre fichier d'environnement passe devant `.env.local`.
+
+Le test se fait en local : il ne consomme pas les essais du navigateur.

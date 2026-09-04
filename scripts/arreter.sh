@@ -1,19 +1,17 @@
 #!/usr/bin/env bash
+# ============================================================================
 # Arrête le site et le tunnel lancés par scripts/demarrer.sh.
+#
+#   bash scripts/arreter.sh                   # le site et le tunnel
+#   bash scripts/arreter.sh --site-seulement  # le site seul, tunnel conservé
+#
+# L'arrêt est vérifié : tant que le port répond, le script insiste. Un serveur
+# oublié d'une session précédente empêchait sinon tout redémarrage réel.
+# ============================================================================
 set -u
 PROJECT="$(cd "$(dirname "$0")/.." && pwd)"
+# shellcheck source=scripts/commun.sh
+. "$PROJECT/scripts/commun.sh"
 
-arreter() { # $1 = fichier de PID, $2 = libellé
-  if [ -f "$1" ] && kill "$(cat "$1")" 2>/dev/null; then
-    echo "→ $2 arrêté."
-  else
-    echo "→ Aucun $2 lancé par ce script."
-  fi
-  rm -f "$1"
-}
-
-arreter "$PROJECT/.tunnel.pid" "tunnel"
-arreter "$PROJECT/.site.pid" "site"
-# Filet de sécurité : `-x` cible le programme par son nom exact.
-pkill -x cloudflared > /dev/null 2>&1 && echo "→ Tunnel Cloudflare résiduel arrêté."
-pkill -x ngrok > /dev/null 2>&1 && echo "→ Tunnel ngrok résiduel arrêté."
+arreter_site || exit 1
+[ "${1:-}" = "--site-seulement" ] || arreter_tunnel
