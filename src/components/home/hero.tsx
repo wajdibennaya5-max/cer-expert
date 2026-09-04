@@ -76,6 +76,22 @@ export function Hero({ locale, dict, areaCount }: { locale: Locale; dict: Dictio
             </AssistantTrigger>
           </div>
 
+          {/*
+            Réassurance immédiate, sous les boutons.
+            Ce qui retient un client avant d'appeler un artisan, c'est la
+            crainte d'un engagement ou d'un prix imposé. Ces trois mentions
+            lèvent l'obstacle à l'endroit exact où il se pose, et chacune
+            reprend un engagement que le site tient déjà par ailleurs.
+          */}
+          <ul className="mt-6 flex flex-wrap gap-x-5 gap-y-2">
+            {dict.reassurance.map((mention) => (
+              <li key={mention} className="flex items-center gap-2 text-sm text-slate-300">
+                <Icon name="check" size={15} className="shrink-0 text-emerald-400" />
+                {mention}
+              </li>
+            ))}
+          </ul>
+
           <a
             href={telHref}
             className="mt-6 inline-flex items-center gap-3 rounded-2xl border border-white/10 bg-white/4 px-4 py-3 transition hover:border-volt-400/40 hover:bg-white/8"

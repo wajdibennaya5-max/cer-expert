@@ -67,6 +67,11 @@ export const fr = {
     seeAll: "Voir tous les services",
     email: "Envoyer un e-mail",
   },
+  reassurance: [
+    "Demande sans engagement",
+    "Rappel avant tout chiffrage",
+    "Plomberie et électricité, une seule équipe",
+  ],
   search: {
     label: "Quel est votre problème ?",
     placeholder: "Ex. fuite d'eau, chauffe-eau, disjoncteur…",

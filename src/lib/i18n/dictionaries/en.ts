@@ -66,6 +66,7 @@ export const en: Dictionary = {
     seeAll: "See all services",
     email: "Send an e-mail",
   },
+  reassurance: ["No obligation", "We call before quoting", "Plumbing and electrics, one team"],
   search: {
     label: "What is the problem?",
     placeholder: "e.g. water leak, water heater, breaker…",
