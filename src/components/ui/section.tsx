@@ -54,16 +54,26 @@ interface SectionProps {
   id?: string;
   className?: string;
   tone?: "light" | "mist" | "dark";
+  /**
+   * Rythme vertical réduit, pour un bloc court — une recherche, un rappel.
+   *
+   * C'est une propriété plutôt qu'une classe passée de l'extérieur : Tailwind
+   * départage deux classes concurrentes par leur ordre dans la feuille de
+   * style, jamais par l'ordre d'écriture. Un `py-10` ajouté après coup ne
+   * l'emporterait donc pas de façon fiable sur le `py-20` de base.
+   */
+  compact?: boolean;
 }
 
-export function Section({ children, id, className = "", tone = "light" }: SectionProps) {
+export function Section({ children, id, className = "", tone = "light", compact = false }: SectionProps) {
   const tones = {
     light: "bg-white",
     mist: "bg-mist-50",
     dark: "section-dark",
   } as const;
+  const rythme = compact ? "py-10 sm:py-12" : "py-20 sm:py-24 lg:py-28";
   return (
-    <section id={id} className={`relative overflow-hidden py-20 sm:py-24 lg:py-28 ${tones[tone]} ${className}`}>
+    <section id={id} className={`relative overflow-hidden ${rythme} ${tones[tone]} ${className}`}>
       {children}
     </section>
   );

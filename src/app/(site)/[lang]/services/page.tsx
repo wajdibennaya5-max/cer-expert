@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { PageHeader } from "@/components/ui/page-header";
 import { ServiceCard } from "@/components/service-card";
+import { ServiceSearch } from "@/components/home/service-search";
 import { CtaBand } from "@/components/home/cta-band";
 import { Section } from "@/components/ui/section";
 import { Icon } from "@/components/icons";
@@ -43,6 +44,19 @@ export default async function ServicesPage({ params }: { params: Promise<{ lang:
         subtitle={dict.services.subtitle}
         breadcrumb={[{ label: dict.nav.services }]}
       />
+
+      {/*
+        Vingt et une prestations font un long défilement sur un téléphone. La
+        recherche évite d'imposer ce parcours à qui sait déjà ce qu'il cherche,
+        sans rien retirer à ceux qui préfèrent parcourir les deux métiers.
+      */}
+      <Section tone="light" compact>
+        <div className="container-page">
+          <div className="mx-auto max-w-xl">
+            <ServiceSearch locale={locale} dict={dict} variante="clair" />
+          </div>
+        </div>
+      </Section>
 
       {(["plomberie", "electricite"] as const).map((key, sectionIndex) => {
         const category = categories[key];
