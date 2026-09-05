@@ -193,6 +193,12 @@ async function expedier(destinataire: string, m: Message, repondreA?: string): P
       user: process.env.SMTP_UTILISATEUR,
       pass: process.env.SMTP_MOTDEPASSE,
     },
+    // Le serveur tourne sur un téléphone : le réseau tombe, le tunnel coupe.
+    // Sans délai, un envoi resterait suspendu et retiendrait une connexion
+    // pour rien — la demande, elle, est déjà enregistrée.
+    connectionTimeout: 15_000,
+    greetingTimeout: 15_000,
+    socketTimeout: 20_000,
   });
   await transport.sendMail({
     from: process.env.COURRIEL_EXPEDITEUR || process.env.SMTP_UTILISATEUR,
