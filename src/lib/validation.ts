@@ -76,6 +76,43 @@ export const interventionRequestSchema = z.object({
 
 export type InterventionRequestInput = z.infer<typeof interventionRequestSchema>;
 
+/**
+ * Une estimation solaire venue du site Solarys.
+ *
+ * Les bornes sont physiques, non décoratives : elles écartent une saisie
+ * absurde ou forgée avant qu'elle ne parte dans un courriel qui l'annoncerait
+ * comme un fait.
+ */
+export const etudeSolaireSchema = z.object({
+  consommation: z.number().min(1).max(1_000_000),
+  prixKwh: z.number().min(0.01).max(5),
+  puissance: z.number().min(0.5).max(1000),
+  modules: z.number().int().min(1).max(5000),
+  surface: z.number().min(1).max(20_000),
+  production: z.number().min(1).max(5_000_000),
+  economieAnnuelle: z.number().min(0).max(10_000_000),
+  cout: z.number().min(0).max(100_000_000),
+  // Un projet qui ne se rembourse jamais existe : il se dit, il ne s'invente pas.
+  retour: z.number().min(0).max(100).nullable(),
+  toiture: z
+    .object({ largeur: z.number().min(0.5).max(200), profondeur: z.number().min(0.5).max(200) })
+    .optional(),
+});
+
+/** La demande complète envoyée par le site solaire. */
+export const demandeSolaireSchema = z.object({
+  name: z.string().trim().min(2, "Indiquez votre nom").max(80),
+  phone: phoneSchema,
+  email: z.union([z.literal(""), z.email("Adresse e-mail invalide").max(120)]).optional(),
+  area: z.string().trim().max(80).optional().or(z.literal("")),
+  message: z.string().trim().max(500).optional().or(z.literal("")),
+  etude: etudeSolaireSchema,
+  /** Champ piège : rempli uniquement par un robot. */
+  company: z.string().max(100).optional(),
+});
+
+export type DemandeSolaireInput = z.infer<typeof demandeSolaireSchema>;
+
 export const trackRequestSchema = z.object({
   reference: z.string().trim().min(4).max(24),
   phone: phoneSchema,

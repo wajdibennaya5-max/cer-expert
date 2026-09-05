@@ -32,6 +32,28 @@ export interface AttachedMedia {
   size: number;
 }
 
+/**
+ * Une estimation solaire, telle que le site Solarys l'a calculée chez le
+ * visiteur. Elle est jointe à la demande pour que l'équipe chiffre sans
+ * rappeler — et conservée telle quelle : c'est ce que le client a vu.
+ */
+export interface EtudeSolaire {
+  /** Consommation annuelle relevée sur la facture, en kWh. */
+  consommation: number;
+  /** Prix réellement payé du kilowattheure, déduit de la facture, en dinars. */
+  prixKwh: number;
+  puissance: number;
+  modules: number;
+  surface: number;
+  production: number;
+  economieAnnuelle: number;
+  cout: number;
+  /** Années avant remboursement, ou `null` si le projet ne se rembourse pas. */
+  retour: number | null;
+  /** Cotes du pan de toiture, quand le visiteur les a données. */
+  toiture?: { largeur: number; profondeur: number };
+}
+
 export interface InterventionRequest {
   id: string;
   /** Référence communiquée au client, ex. WT-2609-4821. */
@@ -63,6 +85,8 @@ export interface InterventionRequest {
   appointment?: { date: string; time: string; technician?: string };
   timeline: TimelineEntry[];
   adminNotes: { at: string; text: string }[];
+  /** Présente uniquement sur les demandes venues du site solaire. */
+  etude?: EtudeSolaire;
 }
 
 export interface Review {
