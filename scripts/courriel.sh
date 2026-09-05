@@ -51,32 +51,95 @@ lire_actuel() {
   grep -E "^$1=" "$CONF" 2>/dev/null | tail -1 | cut -d= -f2- | sed 's/^"\(.*\)"$/\1/'
 }
 
-# Pose une question en proposant la valeur déjà enregistrée, ou un exemple.
+# Une réponse ressemble-t-elle à une commande plutôt qu'à un réglage ?
+#
+# Sur un téléphone, on tape la commande suivante pendant que le script
+# démarre : la frappe arrive après la vidange du tampon et devient une
+# « réponse ». Vider ne suffit donc pas — il faut reconnaître ce qui n'en est
+# pas une, et redemander sur-le-champ plutôt que de le découvrir à la fin.
+ressemble_a_commande() {
+  case "$1" in
+    *' '*|*'&&'*|*';'*|*'|'*|*'$('*|*'`'*|'./'*|'~/'*|'/'*) return 0 ;;
+    cd|git|bash|sh|npm|node|ls|nano|sudo|clear|exit) return 0 ;;
+  esac
+  return 1
+}
+
+# Pose une question, vérifie la réponse, et redemande tant qu'elle ne convient
+# pas.
 #
 # L'INVITE PART SUR LA SORTIE D'ERREUR, jamais sur la sortie standard : celle-ci
 # est capturée par $(…), et une invite écrite dessus entrerait dans la valeur —
 # on enregistrerait « SMTP_HOTE=  Serveur SMTP [smtp-relay…] : smtp-relay… ».
+#
+# $4 : forme attendue — 'texte' (par défaut), 'port', 'courriel', 'adresse',
+#      ou 'libre' pour ce qui peut légitimement contenir des espaces.
 demander() {
-  local cle="$1" question="$2" defaut="$3" actuel reponse
+  local cle="$1" question="$2" defaut="$3" forme="${4:-texte}"
+  local actuel reponse essais=0
   actuel="$(lire_actuel "$cle")"
   [ -n "$actuel" ] && defaut="$actuel"
-  if [ -n "$defaut" ]; then
-    printf "  %s\n  [%s] : " "$question" "$defaut" >&2
-  else
-    printf "  %s : " "$question" >&2
-  fi
-  vider_tampon
-  read -r reponse
-  printf '%s' "${reponse:-$defaut}"
+
+  while :; do
+    essais=$((essais + 1))
+    if [ "$essais" -gt 5 ]; then
+      printf "\n  ✗ Trop de saisies incorrectes. Rien n'a été modifié.\n" >&2
+      printf "    Reprenez à tête reposée : bash scripts/courriel.sh\n" >&2
+      exit 1
+    fi
+
+    if [ -n "$defaut" ]; then
+      printf "  %s\n  [%s] : " "$question" "$defaut" >&2
+    else
+      printf "  %s : " "$question" >&2
+    fi
+    vider_tampon
+    read -r reponse
+    reponse="${reponse:-$defaut}"
+
+    case "$forme" in
+      port)
+        case "$reponse" in
+          ''|*[!0-9]*) printf "  ↳ Un numéro de port, seulement des chiffres (587 ou 465).\n\n" >&2; continue ;;
+        esac
+        ;;
+      courriel)
+        case "$reponse" in
+          *@*.*) : ;;
+          *) printf "  ↳ Cela ne ressemble pas à une adresse électronique.\n\n" >&2; continue ;;
+        esac
+        ;;
+      adresse)
+        case "$reponse" in
+          https://*) : ;;
+          *) printf "  ↳ L'adresse doit commencer par https://\n\n" >&2; continue ;;
+        esac
+        ;;
+      libre) : ;;
+      *)
+        if ressemble_a_commande "$reponse"; then
+          printf "  ↳ « %s » ressemble à une commande, pas à un réglage.\n" "$reponse" >&2
+          printf "     Cela arrive quand on tape la commande suivante pendant que le\n" >&2
+          printf "     script démarre. Attendez la question, puis répondez.\n\n" >&2
+          continue
+        fi
+        ;;
+    esac
+
+    [ -n "$reponse" ] && break
+    printf "  ↳ Une réponse est nécessaire.\n\n" >&2
+  done
+
+  printf '%s' "$reponse"
 }
 
 echo "  ── Le fournisseur d'envoi ──"
 echo "  Brevo est gratuit jusqu'à 300 courriels par jour et accepte un"
 echo "  domaine hébergé chez Cloudflare comme le vôtre."
 echo
-HOTE="$(demander SMTP_HOTE 'Serveur SMTP' 'smtp-relay.brevo.com')"
-PORT="$(demander SMTP_PORT 'Port (587 ou 465)' '587')"
-UTILISATEUR="$(demander SMTP_UTILISATEUR "Identifiant SMTP" '')"
+HOTE="$(demander SMTP_HOTE 'Serveur SMTP' 'smtp-relay.brevo.com' texte)"
+PORT="$(demander SMTP_PORT 'Port (587 ou 465)' '587' port)"
+UTILISATEUR="$(demander SMTP_UTILISATEUR 'Identifiant SMTP' '' texte)"
 
 if [ -z "$UTILISATEUR" ]; then
   echo
@@ -126,12 +189,12 @@ echo
 echo "  ── Les adresses ──"
 echo "  L'expéditeur doit être une adresse VÉRIFIÉE chez le fournisseur,"
 echo "  sinon l'envoi sera refusé."
-EXPEDITEUR="$(demander COURRIEL_EXPEDITEUR "Expéditeur affiché" 'Solarys <contact@20122011.xyz>')"
-EQUIPE="$(demander COURRIEL_EQUIPE "Qui reçoit les demandes" 'wajdibennaya5@gmail.com')"
+EXPEDITEUR="$(demander COURRIEL_EXPEDITEUR 'Expéditeur affiché' 'Solarys <contact@20122011.xyz>' libre)"
+EQUIPE="$(demander COURRIEL_EQUIPE 'Qui reçoit les demandes' 'wajdibennaya5@gmail.com' courriel)"
 
 echo
 echo "  ── Le site solaire ──"
-ORIGINES="$(demander ORIGINES_SOLAIRE "Adresse du site solaire" 'https://wajdibennaya5-max.github.io')"
+ORIGINES="$(demander ORIGINES_SOLAIRE 'Adresse du site solaire' 'https://wajdibennaya5-max.github.io' adresse)"
 
 # ------------------------------------------------------------- écriture
 # Écriture atomique : le fichier n'est jamais laissé à moitié réécrit, même si
