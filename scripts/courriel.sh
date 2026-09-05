@@ -28,6 +28,23 @@ if [ ! -f "$CONF" ]; then
   chmod 600 "$CONF"
 fi
 
+# Vide ce qui traîne dans le tampon du terminal AVANT chaque question.
+#
+# Sur un téléphone, on colle souvent plusieurs lignes d'un coup, ou on tape la
+# commande suivante pendant qu'un `git pull` défile. Ces lignes attendent dans
+# le tampon, et le premier `read` venu les avale : on se retrouve avec un
+# identifiant SMTP qui vaut « cd ~/wajdi-tayssir && git pull », et un mot de
+# passe qui vaut la commande d'après — sans que rien ne le signale.
+# Uniquement sur un vrai terminal : quand les réponses arrivent par un tuyau
+# — un test, une installation automatisée —, elles sont déjà toutes là, et les
+# vider reviendrait à tout jeter.
+vider_tampon() {
+  [ -t 0 ] || return 0
+  local poubelle
+  while IFS= read -r -t 0.05 poubelle 2>/dev/null; do :; done
+  return 0
+}
+
 # La dernière ligne, pas la première : en cas de doublon, c'est celle que
 # Next.js retient au chargement.
 lire_actuel() {
@@ -48,6 +65,7 @@ demander() {
   else
     printf "  %s : " "$question" >&2
   fi
+  vider_tampon
   read -r reponse
   printf '%s' "${reponse:-$defaut}"
 }
@@ -66,11 +84,30 @@ if [ -z "$UTILISATEUR" ]; then
   exit 1
 fi
 
+# Dernier filet : si malgré tout une commande s'est glissée dans une réponse,
+# on refuse plutôt que d'écrire une configuration qui ne marchera jamais et
+# dont personne ne comprendra pourquoi.
+case "$HOTE$UTILISATEUR" in
+  *' '*|*'&&'*|*';'*|*'|'*|*'$('*|'cd '*|*'git '*|*'bash '*|*'npm '*)
+    echo
+    echo "✗ Une des réponses ressemble à une commande, pas à un réglage :"
+    echo "    serveur      : $HOTE"
+    echo "    identifiant  : $UTILISATEUR"
+    echo
+    echo "  Cela arrive quand des lignes tapées avant le lancement dorment"
+    echo "  encore dans le terminal. Rien n'a été modifié."
+    echo
+    echo "  Appuyez sur Entrée quelques fois pour vider l'écran, puis relancez :"
+    echo "     bash scripts/courriel.sh"
+    exit 1 ;;
+esac
+
 echo
 echo "  Le mot de passe ne s'affichera pas."
 echo "  ⚠ Chez Brevo, ce N'EST PAS le mot de passe de votre compte : il se"
 echo "    trouve dans « SMTP & API », onglet SMTP, ligne « Master password »."
 printf "  Mot de passe SMTP : "
+vider_tampon
 read -r -s MDP
 echo
 
@@ -127,6 +164,7 @@ echo
 
 # ------------------------------------------------------------- essai
 printf "  Envoyer un courriel d'essai maintenant ? [O/n] "
+vider_tampon
 read -r ESSAI
 case "${ESSAI:-o}" in
   [oOyY]*)
