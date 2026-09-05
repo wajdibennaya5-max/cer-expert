@@ -107,6 +107,7 @@ export async function POST(request: Request) {
         toiture: e.toiture
           ? { largeur: e.toiture.largeur, profondeur: e.toiture.profondeur }
           : undefined,
+        toit: e.toit ? { orientation: e.toit.orientation, pente: e.toit.pente } : undefined,
       },
     });
 

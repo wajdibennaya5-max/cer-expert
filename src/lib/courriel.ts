@@ -66,6 +66,14 @@ function lignesEtude(e: EtudeSolaire): Array<[string, string]> {
     lignes.push(["Pan de toiture",
       `${virgule(e.toiture.largeur)} × ${virgule(e.toiture.profondeur)} m`]);
   }
+  if (e.toit) {
+    const pentes: Record<string, string> = {
+      plat: "toit plat ou terrasse", faible: "pente faible",
+      moyenne: "pente moyenne", forte: "pente forte",
+    };
+    lignes.push(["Orientation",
+      `${e.toit.orientation} — ${pentes[e.toit.pente] ?? e.toit.pente}`]);
+  }
   return lignes;
 }
 

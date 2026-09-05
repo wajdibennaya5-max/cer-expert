@@ -97,6 +97,17 @@ export const etudeSolaireSchema = z.object({
   toiture: z
     .object({ largeur: z.number().min(0.5).max(200), profondeur: z.number().min(0.5).max(200) })
     .optional(),
+  // L'orientation pèse plus que tout le reste : un pan plein est produit
+  // 17 % de moins qu'un plein sud. À connaître avant de chiffrer.
+  toit: z
+    .object({
+      orientation: z.enum([
+        "sud", "sud-est", "sud-ouest", "est", "ouest",
+        "nord-est", "nord-ouest", "nord",
+      ]),
+      pente: z.enum(["plat", "faible", "moyenne", "forte"]),
+    })
+    .optional(),
 });
 
 /** La demande complète envoyée par le site solaire. */

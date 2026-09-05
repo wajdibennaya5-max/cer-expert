@@ -52,6 +52,8 @@ export interface EtudeSolaire {
   retour: number | null;
   /** Cotes du pan de toiture, quand le visiteur les a données. */
   toiture?: { largeur: number; profondeur: number };
+  /** Orientation et pente du pan : le facteur le plus lourd de l'étude. */
+  toit?: { orientation: string; pente: string };
 }
 
 export interface InterventionRequest {
