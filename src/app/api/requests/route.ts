@@ -2,6 +2,7 @@ import { getService } from "@/content/services";
 import { fail, invalid, logError, ok, readJson, serverError, tooMany } from "@/lib/api";
 import { startClientSession } from "@/lib/auth";
 import { defaultLocale } from "@/lib/i18n/config";
+import { notifierDemande } from "@/lib/courriel";
 import { clientIp, rateLimit } from "@/lib/rate-limit";
 import { syncClientProfile } from "@/lib/rewards";
 import { phoneKey, store } from "@/lib/store";
@@ -52,6 +53,11 @@ export async function POST(request: Request) {
 
     const profile = await syncClientProfile(created);
     await startClientSession(profile.phoneKey, profile.name);
+
+    // La demande est enregistrée : la notification ne doit plus rien pouvoir
+    // compromettre. On ne l'attend donc pas, et on ravale son échec — un
+    // client ne doit jamais voir une erreur parce qu'une boîte est mal réglée.
+    void notifierDemande(created).catch((error) => logError("requests.notify", error));
 
     return ok({ reference: created.reference, id: created.id }, { status: 201 });
   } catch (error) {
