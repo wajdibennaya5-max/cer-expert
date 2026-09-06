@@ -541,6 +541,21 @@ pas un remplacement d'hébergement.
 
 ## Mettre à jour le site
 
+### La toute première fois
+
+`mettre-a-jour.sh` est lui-même arrivé par une mise à jour : tant que vous ne
+l'avez pas récupéré, il n'existe pas sur le téléphone. Une seule fois, donc :
+
+```bash
+cd ~/wajdi-tayssir
+git fetch origin && git pull --ff-only
+```
+
+Si `bash: scripts/mettre-a-jour.sh: No such file or directory` s'affiche, c'est
+exactement cela : le script est dans la version que vous n'avez pas encore.
+
+### Ensuite
+
 Une seule commande, depuis Ubuntu :
 
 ```bash
@@ -566,6 +581,44 @@ service.
 Ce qu'il ne lit ni ne modifie jamais : `data/` (vos demandes, vos photos, vos
 réglages) et `.env.local` (vos mots de passe et vos clés). Ils ne sont pas dans
 le dépôt, et une mise à jour n'a aucune raison d'y toucher.
+
+---
+
+## Modifier `.env.local` sans éditeur
+
+`nano` n'est pas toujours installé dans Ubuntu, et écrire un fichier de
+configuration au pouce dans `vi` est une épreuve. Le plus sûr est d'AJOUTER les
+lignes en une seule fois :
+
+```bash
+cd ~/wajdi-tayssir
+cp .env.local .env.local.sauvegarde          # toujours, avant d'y toucher
+cat >> .env.local <<'FIN'
+UNE_VARIABLE=une valeur
+UNE_AUTRE=autre chose
+FIN
+bash scripts/demarrer.sh                     # relire la configuration
+```
+
+Trois points qui évitent des heures de recherche :
+
+- **`>>` et non `>`.** Un seul chevron REMPLACE le fichier : votre mot de passe
+  d'administration, votre clé de session et vos identifiants disparaîtraient
+  d'un coup. C'est pour cela que la copie de sauvegarde vient d'abord.
+- **`<<'FIN'` avec les apostrophes.** Sans elles, le shell interprète `$` et
+  les apostrophes des valeurs avant de les écrire.
+- **Ne collez JAMAIS ces lignes directement dans le terminal.** Le shell les
+  exécuterait au lieu de les enregistrer : `PAIEMENT_BANQUE=Banque de Tunisie`
+  devient « exécute la commande `de` avec l'argument `Tunisie` », d'où les
+  `command not found`. Et rien n'est écrit dans le fichier.
+
+Si une ligne existait déjà, la nouvelle l'emporte — c'est la dernière lue qui
+compte. Pour vérifier ce que le fichier contient vraiment, sans afficher les
+secrets :
+
+```bash
+grep -o '^[A-Z_]*=' .env.local | sort | uniq -c | sort -rn | head
+```
 
 ---
 
