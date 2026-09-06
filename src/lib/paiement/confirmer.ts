@@ -54,3 +54,53 @@ export async function confirmer(
     maintenant,
   });
 }
+
+/**
+ * LA CONFIRMATION PAR UN HUMAIN — le seul chemin pour un paiement manuel.
+ *
+ * Un virement et un transfert de portefeuille ne se vérifient pas par API :
+ * quelqu'un regarde son compte, voit l'argent, et le dit. Cette fonction
+ * matérialise ce geste, et le journalise avec le nom de qui l'a posé — parce
+ * qu'une commande passée à « payée » sans trace serait indiscernable d'une
+ * fraude interne.
+ *
+ * ELLE N'EST PAS APPELABLE DEPUIS LE SITE. Sa seule porte d'entrée est une
+ * route protégée par `requireAdmin()` : le contrôle d'accès vit côté serveur,
+ * pas dans l'interface.
+ *
+ * `montantRecu` est facultatif. Renseigné, il est confronté au montant dû —
+ * un virement de 9 DT sur une commande de 90 se remarque au moment où on le
+ * saisit, pas trois mois plus tard dans un rapprochement.
+ */
+export function confirmerParAdmin(
+  commande: Commande,
+  { par, reference, montantRecu, maintenant = new Date() }: {
+    par: string;
+    reference?: string;
+    montantRecu?: number;
+    maintenant?: Date;
+  },
+): { commande: Commande; change: boolean; raison: string } {
+  const qui = String(par ?? "").trim();
+  if (!qui) {
+    return { commande, change: false, raison: "La confirmation doit être signée." };
+  }
+
+  const controle = montantConforme(commande, montantRecu);
+  if (!controle.conforme) {
+    return { commande, change: false, raison: controle.raison };
+  }
+
+  const details = [
+    `Confirmé à la main par ${qui}`,
+    reference ? `référence bancaire ${reference}` : null,
+    montantRecu !== undefined ? `montant reçu ${montantRecu} millimes` : null,
+  ].filter(Boolean).join(" — ");
+
+  return appliquerStatut(commande, "payee", {
+    source: "admin",
+    ...(reference ? { referenceFournisseur: reference } : {}),
+    note: details,
+    maintenant,
+  });
+}
