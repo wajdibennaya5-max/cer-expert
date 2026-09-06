@@ -1,4 +1,5 @@
 import type { Commande, FournisseurPaiement } from "../types";
+import { qrConfigure } from "../qr";
 
 /**
  * PAIEMENT MANUEL — virement bancaire ou transfert Flouci.
@@ -30,6 +31,15 @@ export interface CanalManuel {
   aide: string;
   /** Ce que le client doit recopier, ligne par ligne. */
   lignes: Array<{ libelle: string; valeur: string; copiable?: boolean }>;
+  /**
+   * L'adresse du QR à afficher, quand un QR est déposé sur le serveur.
+   *
+   * Sur téléphone, scanner évite de retaper un numéro — et un numéro retapé
+   * de travers envoie l'argent à quelqu'un d'autre. Le numéro reste affiché
+   * en dessous : tous les clients ne sont pas sur téléphone, et une caméra
+   * peut refuser de coopérer.
+   */
+  qr?: string;
 }
 
 const propre = (v: string | undefined): string => (v ?? "").trim();
@@ -49,8 +59,12 @@ export function canaux(): CanalManuel[] {
     liste.push({
       id: "flouci",
       nom: "Flouci",
-      aide: "Ouvrez votre application Flouci, choisissez « Envoyer », et saisissez "
-        + "ce numéro. Le paiement est immédiat.",
+      aide: qrConfigure()
+        ? "Ouvrez votre application Flouci, appuyez sur « Scanner » et visez ce code. "
+          + "Le paiement est immédiat."
+        : "Ouvrez votre application Flouci, choisissez « Envoyer », et saisissez "
+          + "ce numéro. Le paiement est immédiat.",
+      ...(qrConfigure() ? { qr: "/api/paiement/qr" } : {}),
       lignes: [
         { libelle: "Numéro Flouci", valeur: telFlouci, copiable: true },
         ...(propre(process.env.PAIEMENT_FLOUCI_NOM)

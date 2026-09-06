@@ -68,7 +68,7 @@ test("SANS COORDONNÉES, LE PAIEMENT MANUEL NE PRÉTEND PAS FONCTIONNER", async 
 test("un canal dont les variables manquent n’apparaît pas", async () => {
   // Afficher « RIB : non configuré » sur une page de paiement serait pire que
   // de ne pas proposer le virement.
-  await avecEnvironnement({ PAIEMENT_FLOUCI_TELEPHONE: "54062596" }, () => {
+  await avecEnvironnement({ PAIEMENT_FLOUCI_TELEPHONE: "20000000" }, () => {
     const liste = canaux();
     assert.equal(liste.length, 1);
     assert.equal(liste[0].id, "flouci");
@@ -85,12 +85,12 @@ test("un canal dont les variables manquent n’apparaît pas", async () => {
 
 test("les deux canaux coexistent, chacun avec son mode d’emploi", async () => {
   await avecEnvironnement({
-    PAIEMENT_FLOUCI_TELEPHONE: "54062596",
-    PAIEMENT_FLOUCI_NOM: "Wajdi Bennaya",
+    PAIEMENT_FLOUCI_TELEPHONE: "20000000",
+    PAIEMENT_FLOUCI_NOM: "Nom du bénéficiaire",
     PAIEMENT_RIB: "24 031 170 5822 511101 05",
     PAIEMENT_IBAN: "TN59 24 031 170 5822 511101 05",
     PAIEMENT_SWIFT: "BTEXTNTT",
-    PAIEMENT_TITULAIRE: "Wajdi Bennaya",
+    PAIEMENT_TITULAIRE: "Nom du bénéficiaire",
     PAIEMENT_BANQUE: "Banque de Tunisie et des Emirats",
   }, () => {
     const liste = canaux();
