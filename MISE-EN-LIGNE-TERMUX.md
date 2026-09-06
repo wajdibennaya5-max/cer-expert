@@ -539,6 +539,36 @@ pas un remplacement d'hébergement.
 
 ---
 
+## Mettre à jour le site
+
+Une seule commande, depuis Ubuntu :
+
+```bash
+cd ~/wajdi-tayssir && bash scripts/mettre-a-jour.sh
+```
+
+Pour récupérer une branche précise — celle d'un développement en cours, par
+exemple :
+
+```bash
+bash scripts/mettre-a-jour.sh claude/monetize-open-source-dwfrib
+```
+
+Le script s'arrête **avant** de toucher à quoi que ce soit si des fichiers ont
+été modifiés sur le téléphone sans être enregistrés : mieux vaut refuser que
+rendre du travail introuvable. Il ne réinstalle les dépendances que si le
+verrou a changé — sur un téléphone, c'est plusieurs minutes.
+
+Et si la construction échoue, **le site en ligne n'est pas touché** : l'ancienne
+version continue de tourner. Une mise à jour ratée ne met jamais le site hors
+service.
+
+Ce qu'il ne lit ni ne modifie jamais : `data/` (vos demandes, vos photos, vos
+réglages) et `.env.local` (vos mots de passe et vos clés). Ils ne sont pas dans
+le dépôt, et une mise à jour n'a aucune raison d'y toucher.
+
+---
+
 ## Résumé : relancer le site après un redémarrage
 
 Trois lignes, et une seule session suffit :
