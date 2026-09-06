@@ -115,12 +115,34 @@ export interface FournisseurPaiement {
     Promise<{ ok: true; url: string; reference?: string }
       | { ok: false; raison: string }>;
   /**
-   * Lit une notification reçue sur le webhook, APRÈS en avoir vérifié la
-   * signature. Un fournisseur qui ne sait pas signer ses notifications
-   * renvoie `ok: false` : on n'accorde pas un paiement sur la foi d'une
-   * requête HTTP que n'importe qui peut envoyer.
+   * Lit une notification reçue sur le webhook.
+   *
+   * ELLE NE VAUT PAS CONFIRMATION. Chez la plupart des passerelles
+   * tunisiennes, cette notification n'est pas signée : n'importe qui
+   * connaissant l'adresse peut en envoyer une. Elle sert donc uniquement à
+   * apprendre QUELLE commande regarder — c'est `verifier` qui tranche.
+   *
+   * Un fournisseur qui signe réellement ses notifications peut le vérifier ici
+   * en plus ; cela ne dispense pas de la confirmation serveur à serveur.
    */
   lireNotification(corps: unknown, entetes: Headers):
     Promise<{ ok: true; reference: string; statut: StatutPaiement; identifiant: string }
+      | { ok: false; raison: string }>;
+
+  /**
+   * DEMANDE AU FOURNISSEUR L'ÉTAT RÉEL D'UN PAIEMENT.
+   *
+   * C'est la seule source de vérité. Serveur à serveur, authentifiée par la
+   * clé privée, elle ne peut être ni falsifiée par le client ni rejouée par un
+   * tiers — contrairement au retour du navigateur et, chez beaucoup de
+   * passerelles, au webhook lui-même.
+   *
+   * `montantMillimes` est rendu quand le fournisseur l'annonce : le cœur le
+   * confronte à celui de la commande et refuse un écart. Un paiement
+   * authentique d'un dinar sur une commande de quatre-vingt-dix reste un
+   * paiement authentique — et une étude offerte.
+   */
+  verifier(commande: Commande):
+    Promise<{ ok: true; statut: StatutPaiement; montantMillimes?: number; identifiant?: string }
       | { ok: false; raison: string }>;
 }

@@ -197,6 +197,37 @@ export function marquerLivree(commande: Commande, maintenant = new Date()):
   };
 }
 
+/**
+ * CONFRONTE LA RÉPONSE DU FOURNISSEUR À CE QUI ÉTAIT DÛ.
+ *
+ * Un paiement authentique de un dinar sur une commande de quatre-vingt-dix est
+ * un paiement authentique : la signature est bonne, la banque confirme, le
+ * journal est propre. Et l'étude est offerte.
+ *
+ * C'est le dernier verrou de la chaîne, et il ne coûte qu'une comparaison
+ * d'entiers. On ne l'applique que si le fournisseur annonce un montant : tous
+ * ne le font pas, et refuser faute d'information bloquerait des paiements
+ * légitimes. Quand il l'annonce, il doit correspondre exactement — un écart
+ * d'un millime est un écart.
+ */
+export function montantConforme(
+  commande: Commande,
+  montantAnnonce: number | undefined,
+): { conforme: true } | { conforme: false; raison: string } {
+  if (montantAnnonce === undefined || montantAnnonce === null) return { conforme: true };
+  if (!Number.isFinite(montantAnnonce)) {
+    return { conforme: false, raison: "Montant confirmé illisible." };
+  }
+  if (Math.round(montantAnnonce) !== commande.montantMillimes) {
+    return {
+      conforme: false,
+      raison: `Montant confirmé (${montantAnnonce}) différent du montant dû `
+        + `(${commande.montantMillimes}).`,
+    };
+  }
+  return { conforme: true };
+}
+
 /** Une commande donne-t-elle droit au livrable ? */
 export const donneAcces = (commande: Commande | null | undefined): boolean =>
   commande?.statut === "payee";

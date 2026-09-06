@@ -1,5 +1,6 @@
 import type { FournisseurPaiement } from "../types";
 import { simulateur } from "./simulateur";
+import { flouci } from "./flouci";
 
 /**
  * LE REGISTRE DES MOYENS DE PAIEMENT.
@@ -15,6 +16,7 @@ import { simulateur } from "./simulateur";
  * qu'aucun paiement en ligne n'est disponible plutôt que de faire semblant.
  */
 const REGISTRE: Record<string, FournisseurPaiement> = {
+  [flouci.id]: flouci,
   [simulateur.id]: simulateur,
 };
 
@@ -74,4 +76,4 @@ export function diagnostic(): { actif: string | null; raisons: string[] } {
   return { actif: null, raisons: f.manquant() };
 }
 
-export { simulateur };
+export { simulateur, flouci };

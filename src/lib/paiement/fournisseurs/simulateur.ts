@@ -103,4 +103,44 @@ export const simulateur: FournisseurPaiement = {
     }
     return { ok: true as const, reference, statut, identifiant };
   },
+
+  /**
+   * En simulation, l'état est celui que la page de paiement a inscrit dans la
+   * mémoire du processus. Cela suffit à éprouver le chemin complet : le cœur
+   * appelle `verifier` exactement comme il le fera avec une vraie banque.
+   */
+  async verifier(commande: Commande) {
+    if (!this.configure()) {
+      return { ok: false as const, raison: "Le simulateur est désactivé en production." };
+    }
+    const etat = etatsSimules.get(commande.reference);
+    if (!etat) return { ok: false as const, raison: "Aucune transaction simulée." };
+    return {
+      ok: true as const,
+      statut: etat.statut,
+      montantMillimes: etat.montantMillimes,
+      identifiant: `SIM-${commande.reference}`,
+    };
+  },
 };
+
+/**
+ * L'état des transactions simulées, en mémoire du processus.
+ *
+ * Volontairement volatil : une caisse d'essai ne doit rien laisser derrière
+ * elle. Redémarrer le serveur remet tout à zéro, ce qui est exactement ce
+ * qu'on veut d'un banc d'essai.
+ */
+const etatsSimules = new Map<string, { statut: StatutPaiement; montantMillimes: number }>();
+
+/** Inscrit l'issue d'un paiement simulé — appelé par la page de simulation. */
+export function simulerIssue(
+  reference: string,
+  statut: StatutPaiement,
+  montantMillimes: number,
+): void {
+  etatsSimules.set(reference, { statut, montantMillimes });
+}
+
+/** Oublie tout — utile entre deux essais. */
+export const oublierSimulations = (): void => etatsSimules.clear();

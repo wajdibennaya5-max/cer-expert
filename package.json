@@ -12,7 +12,8 @@
     "seed": "node scripts/seed.mjs",
     "admin:password": "node scripts/hash-password.mjs",
     "format": "prettier --write .",
-    "test": "node --experimental-strip-types --import ./scripts/resoudre-ts.mjs --test \"tests/**/*.test.ts\""
+    "test": "node --experimental-strip-types --import ./scripts/resoudre-ts.mjs --test \"tests/**/*.test.ts\"",
+    "paiement:flouci": "node scripts/flouci-diagnostic.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.123.0",
