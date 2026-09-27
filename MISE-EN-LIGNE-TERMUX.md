@@ -482,46 +482,87 @@ de la servir quand votre téléphone ne répond plus. Le visiteur voit le site a
 lieu d'une erreur 502. Le code annonce déjà les bonnes directives — il ne reste
 qu'à autoriser Cloudflare à s'en servir.
 
-### 1. Mettre les pages publiques en cache
+Sur un téléphone, activez d'abord **« Version pour ordinateur »** dans le menu
+⋮ de Chrome : l'éditeur de règles Cloudflare est inutilisable en affichage
+mobile.
 
-Sur **dash.cloudflare.com** → votre domaine → **Caching** → **Cache Rules** →
-*Create rule* :
+### 1. Activer « Always Online »
+
+**dash.cloudflare.com** → votre domaine → **☰** → **Caching** →
+**Configuration** → faites défiler jusqu'à **Always Online** → **On**.
+Il n'y a rien à valider, le réglage s'enregistre seul.
+
+Vérifiez au passage que **Development Mode**, juste en dessous, est bien sur
+**off** : activé, il désactive tout le cache et annule le reste de cette étape.
+
+Cloudflare sert alors la dernière version connue de vos pages quand votre
+serveur est injoignable, en allant au besoin la chercher dans l'archive
+d'Internet (Internet Archive), avec laquelle la fonction est intégrée.
+
+> Dit honnêtement : la documentation de Cloudflare décrit Always Online comme
+> se déclenchant sur un serveur injoignable (erreurs 520–527). L'erreur 1033,
+> celle d'un tunnel arrêté, appartient à une autre famille et n'est pas
+> mentionnée. Activez-le — c'est gratuit et sans risque — mais c'est la règle
+> de cache ci-dessous qui fait le vrai travail. Sur le plan gratuit, la copie
+> d'archive n'est par ailleurs rafraîchie qu'une fois par mois.
+
+### 2. Mettre les pages publiques en cache
+
+**Caching** → **Cache Rules** → *Create rule*. Ignorez les modèles proposés en
+haut de page (« Cache everything », « Bypass cache for everything ») : le
+premier est exactement celui qu'il ne faut pas prendre.
 
 | Champ | Valeur |
 | --- | --- |
-| Nom de la règle | `Pages publiques` |
-| Si… (expression) | `URI Path` **ne commence pas par** `/api` |
-| Alors | **Eligible for cache** |
-| Edge TTL | *Use cache-control header if present* |
+| Rule name | `Pages publiques` |
+| If incoming requests match… | **Custom filter expression** |
+| Field | `URI Path` (et non `URI Full`, proposé par défaut) |
+| Operator | `does not start with` |
+| Value | `/api` |
+| Cache eligibility | **Eligible for cache** |
+| Edge TTL | **Use cache-control header if present, bypass cache if not** |
 
-Ajoutez une seconde condition si l'éditeur le permet : `URI Path` **ne contient
-pas** `espace-client`. Ce n'est pas indispensable — le site renvoie déjà
-`no-store` sur ces pages, et Cloudflare le respecte — mais deux protections
-valent mieux qu'une quand il s'agit de données de clients.
+Laissez vides « Input time-to-live », « Status code TTL » et « Browser TTL »,
+puis **Deploy**.
+
+Avant de déployer, l'*Expression Preview* doit contenir `not starts_with`,
+`http.request.uri.path` et `"/api"`. C'est la ligne à relire.
+
+Des trois choix d'Edge TTL, le premier est le plus prudent : il ne met en cache
+que ce dont le site déclare explicitement qu'il peut l'être. Le code envoie déjà
+les bonnes directives — `s-maxage=60` pour une page fraîche en une minute,
+`stale-while-revalidate=86400` pour une copie de secours gardée 24 heures.
 
 > ⚠️ **Ne créez jamais une règle « Cache Everything » sans condition.**
 > Elle mettrait en cache l'espace client et l'administration, et servirait au
 > visiteur suivant les demandes, les numéros et les photos d'un autre client.
+>
+> Le filtre `/api` est une deuxième sécurité, pas la première : l'espace
+> client, l'administration et les routes d'API renvoient toutes `no-store`, et
+> l'option d'Edge TTL choisie ci-dessus respecte cette instruction.
 
-### 2. Activer « Always Online »
+### 3. Vérifier sans rien couper
 
-**Caching** → **Configuration** → **Always Online** → **On**.
-
-Cloudflare sert alors la dernière version connue de vos pages quand votre
-serveur est injoignable. Si elle n'est plus dans son cache, il va la chercher
-dans l'archive d'Internet (Internet Archive), avec laquelle la fonction est
-intégrée.
-
-### 3. Vérifier
-
-Une fois le site relancé, visitez-le deux fois puis **éteignez le serveur** :
+Depuis le téléphone, une fois le site en ligne :
 
 ```bash
-bash scripts/arreter.sh
+curl -sI https://votre-domaine/fr | grep -i cf-cache-status
+curl -sI https://votre-domaine/fr | grep -i cf-cache-status
+curl -sI https://votre-domaine/admin/login | grep -i cf-cache-status
 ```
 
-Rechargez `https://votre-domaine` depuis un autre appareil : la page doit
-toujours s'afficher. Relancez ensuite avec `bash scripts/demarrer.sh`.
+| Ligne | Attendu | Signification |
+| --- | --- | --- |
+| 1ʳᵉ | `MISS` | Cloudflare vient de récupérer la page et de la garder |
+| 2ᵉ | `HIT` | la page est servie par Cloudflare, sans toucher au téléphone |
+| 3ᵉ | `DYNAMIC` ou `BYPASS` | l'administration n'est pas mise en cache |
+
+Le `HIT` de la deuxième ligne est la preuve que le filet fonctionne ; le
+`DYNAMIC` de la troisième, que les données des clients restent hors du cache.
+
+Cette vérification vaut mieux que d'arrêter le serveur pour tester : elle ne
+rend le site indisponible à personne. N'arrêtez surtout pas le site pour
+tester pendant qu'une validation Google est en cours d'examen.
 
 ### Ce que cela ne fait pas — dit franchement
 
