@@ -120,12 +120,38 @@ arreter_tunnel() {
 
 # ---------------------------------------------------------------- démarrage
 
+# Signale ce qui a changé depuis la dernière construction. N'empêche rien :
+# le site en place fonctionne, il est seulement en retard sur le dépôt. Après
+# un `git pull`, c'est le seul moyen de savoir que la nouveauté attendue n'est
+# pas encore en ligne — sans ce rappel, on relance et on cherche en vain.
+verifier_fraicheur() {
+  local repere="$PROJECT/node_modules/.package-lock.json"
+
+  if [ ! -d "$PROJECT/node_modules" ] || [ "$PROJECT/package.json" -nt "$repere" ]; then
+    echo "⚠ Les dépendances ont changé depuis la dernière installation."
+    echo "  Avant de reconstruire :  npm install"
+  fi
+
+  # `find -newer` s'arrête au premier fichier trouvé : rien à parcourir en
+  # entier, même avec des centaines de pages.
+  if [ -f "$PROJECT/.next/BUILD_ID" ]; then
+    local modifie
+    modifie="$(find "$PROJECT/src" "$PROJECT/public" -type f -newer "$PROJECT/.next/BUILD_ID" -print -quit 2>/dev/null)"
+    if [ -n "$modifie" ]; then
+      echo "⚠ Le code a changé depuis la dernière construction :"
+      echo "  la version en ligne n'est pas celle du dossier."
+      echo "  Pour la mettre à jour :  npm run build"
+    fi
+  fi
+}
+
 # Lance le serveur et attend qu'il réponde. Renvoie faux s'il ne démarre pas.
 demarrer_site() {
   if [ ! -d "$PROJECT/.next" ]; then
     echo "✗ Le site n'est pas construit. Lancez d'abord : npm run build"
     return 1
   fi
+  verifier_fraicheur
   echo "→ Démarrage du site…"
   # Le binaire Next est lancé directement plutôt que via `npm start` : npm crée
   # un processus intermédiaire, et l'arrêter laisserait le serveur en vie.
