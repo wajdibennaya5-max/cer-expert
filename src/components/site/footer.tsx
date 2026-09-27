@@ -4,7 +4,7 @@ import { Logo } from "./logo";
 import { services } from "@/content/services";
 import { localePath, type Locale } from "@/lib/i18n/config";
 import type { Dictionary } from "@/lib/i18n/get-dictionary";
-import { mailHref, site, telHref, whatsappHref } from "@/lib/site";
+import { contactEmails, site, telHref, whatsappHref } from "@/lib/site";
 import { PhoneText } from "@/components/ui/phone-text";
 
 export function Footer({ locale, dict, areas }: { locale: Locale; dict: Dictionary; areas: string[] }) {
@@ -24,7 +24,7 @@ export function Footer({ locale, dict, areas }: { locale: Locale; dict: Dictiona
                 <p className="text-xs font-semibold uppercase tracking-[0.2em] text-aqua-300">Services Pro</p>
               </div>
             </div>
-            <p className="mt-3 text-sm font-medium text-volt-300">{site.tagline}</p>
+            <p className="mt-3 text-sm font-medium text-volt-300">{dict.hero.badge}</p>
             <p className="mt-4 max-w-sm text-sm leading-relaxed text-slate-400">{dict.footer.about}</p>
             <p className="mt-5 inline-flex items-center gap-2 rounded-full border border-white/12 bg-white/5 px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-aqua-200">
               <Icon name="spark" size={14} />
@@ -40,7 +40,10 @@ export function Footer({ locale, dict, areas }: { locale: Locale; dict: Dictiona
                 { href: localePath(locale, "services"), label: dict.nav.services },
                 { href: localePath(locale, "realisations"), label: dict.nav.gallery },
                 { href: localePath(locale, "avis"), label: dict.nav.reviews },
-                { href: localePath(locale, "demande"), label: dict.nav.request },
+                { href: localePath(locale, "a-propos"), label: dict.nav.about },
+                { href: localePath(locale, "zone-intervention"), label: dict.nav.zone },
+                { href: localePath(locale, "contact"), label: dict.nav.contact },
+                { href: localePath(locale, "demande"), label: dict.cta.request },
                 { href: localePath(locale, "espace-client"), label: dict.nav.clientArea },
               ].map((link) => (
                 <li key={link.href}>
@@ -102,22 +105,33 @@ export function Footer({ locale, dict, areas }: { locale: Locale; dict: Dictiona
                   WhatsApp
                 </a>
               </li>
-              <li>
-                <a href={mailHref} className="group flex items-center gap-3 break-all transition hover:text-white">
-                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-aqua-400/15 text-aqua-300">
-                    <Icon name="mail" size={16} />
-                  </span>
-                  {site.email}
-                </a>
+              {contactEmails.map((email) => (
+                <li key={email}>
+                  <a
+                    href={`mailto:${email}`}
+                    className="group flex items-center gap-3 break-all transition hover:text-white"
+                  >
+                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-aqua-400/15 text-aqua-300">
+                      <Icon name="mail" size={16} />
+                    </span>
+                    {email}
+                  </a>
+                </li>
+              ))}
+              <li className="flex items-center gap-3">
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white/6 text-slate-300">
+                  <Icon name="pin" size={16} />
+                </span>
+                {dict.pro.area}
               </li>
               <li className="flex items-start gap-3 pt-1">
                 <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white/6 text-slate-300">
                   <Icon name="clock" size={16} />
                 </span>
                 <span>
-                  {dict.contact.weekdays} · {site.hours.weekdays}
+                  {dict.contact.weekdays} · <bdi dir="ltr">{site.hours.weekdays}</bdi>
                   <br />
-                  {dict.contact.saturday} · {site.hours.saturday}
+                  {dict.contact.saturday} · <bdi dir="ltr">{site.hours.saturday}</bdi>
                 </span>
               </li>
             </ul>
@@ -126,9 +140,12 @@ export function Footer({ locale, dict, areas }: { locale: Locale; dict: Dictiona
 
         {areas.length > 0 ? (
           <div className="mt-12 flex flex-wrap items-center gap-2 border-t border-white/8 pt-8">
-            <span className="me-2 text-xs font-bold uppercase tracking-[0.16em] text-slate-500">
+            <Link
+              href={localePath(locale, "zone-intervention")}
+              className="me-2 text-xs font-bold uppercase tracking-[0.16em] text-slate-400 transition hover:text-aqua-300"
+            >
               {dict.contact.areasTitle}
-            </span>
+            </Link>
             {areas.map((area) => (
               <span
                 key={area}

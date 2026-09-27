@@ -4,9 +4,9 @@ export const en: Dictionary = {
   code: "en",
   meta: {
     home: {
-      title: "Home plumber & electrician — Wajdi & Tayssir Services Pro",
+      title: "Plumber & electrician in Tunis — Wajdi & Tayssir Services Pro",
       description:
-        "Plumbing and electrical call-outs at home: leaks, unclogging, water heaters, electrical faults, consumer units and lighting. Fast, careful work. Call +216 54 062 596.",
+        "Home plumbing, electrical work and repairs in Tunis and Greater Tunis: leaks, unclogging, water heaters, electrical faults, consumer units and lighting. Call +216 54 062 596.",
     },
     services: {
       title: "Our plumbing and electrical services",
@@ -14,7 +14,7 @@ export const en: Dictionary = {
         "21 home plumbing and electrical services: leak repair, unclogging, water heaters, electrical fault finding, consumer units, lighting, installation upgrades.",
     },
     request: {
-      title: "Request a call-out",
+      title: "Get a quote or book a call-out",
       description:
         "Describe your problem in two minutes and get a reference number. Our team calls you back to confirm the appointment.",
     },
@@ -36,6 +36,15 @@ export const en: Dictionary = {
     },
     privacy: { title: "Privacy policy", description: "How your data is collected and used." },
     terms: { title: "Terms of use", description: "Terms of use for this site and our services." },
+    about: {
+      title: "About us — home plumbing and electrical work in Tunis",
+      description: "Who we are, how we work and what we commit to on every home call-out in Tunis and Greater Tunis.",
+    },
+    zone: {
+      title: "Service area — Tunis and Greater Tunis",
+      description:
+        "Home plumber and electrician in Tunis and Greater Tunis. Check the areas we cover and request a quote in two minutes.",
+    },
   },
   nav: {
     home: "Home",
@@ -45,6 +54,8 @@ export const en: Dictionary = {
     request: "Request a call-out",
     contact: "Contact",
     clientArea: "Client area",
+    about: "About",
+    zone: "Service area",
     menu: "Menu",
     closeMenu: "Close menu",
     language: "Language",
@@ -52,8 +63,8 @@ export const en: Dictionary = {
   cta: {
     call: "Call",
     callNow: "Call now",
-    request: "Request a call-out",
-    requestShort: "Request",
+    request: "Get a quote",
+    requestShort: "Quote",
     assistant: "Talk to the assistant",
     assistantShort: "Assistant",
     book: "Book an appointment",
@@ -194,9 +205,22 @@ export const en: Dictionary = {
     empty: "No reviews published yet.",
     ratingSuffix: "out of 5",
     moderation: "Every review is read before publication.",
+    average: "Average rating",
+    countOne: "1 published review",
+    countMany: "{n} published reviews",
+    distribution: "Rating breakdown",
+    starsOne: "1 star",
+    starsMany: "{n} stars",
+    noneYetTitle: "No customer reviews published yet",
+    noneYetText:
+      "We would rather show an empty page than invented reviews. Have we worked for you? Your review will be among the first.",
+    samplesExcluded: "Texts marked “sample” are not counted in the rating.",
+    showMore: "Show more reviews",
+    publishedOn: "Published on",
+    seeAll: "See all reviews",
   },
   request: {
-    title: "Request a call-out",
+    title: "Get a quote or book a call-out",
     subtitle: "Two minutes is enough. You get a reference number straight away to track your request.",
     sectionContact: "Your details",
     sectionProblem: "What you need",
@@ -208,6 +232,10 @@ export const en: Dictionary = {
     fields: {
       name: "Full name",
       namePlaceholder: "e.g. Mohamed Ben Salah",
+      firstName: "First name",
+      firstNamePlaceholder: "e.g. Mohamed",
+      lastName: "Last name",
+      lastNamePlaceholder: "e.g. Ben Salah",
       phone: "Phone",
       phonePlaceholder: "+216 ...",
       email: "E-mail",
@@ -414,6 +442,82 @@ export const en: Dictionary = {
       "The address may be wrong, or the page has moved. Our services are still available below — and the phone always answers.",
     breadcrumb: "Breadcrumb",
     heroSceneAlt: "Diagram of a house showing the water and electrical circuits",
+  },
+  pro: {
+    area: "Tunis and Greater Tunis",
+    weekdaysShort: "Mon – Fri",
+    saturdayShort: "Sat",
+    summary: "On this page",
+    anchors: {
+      services: "Services",
+      why: "Why us",
+      gallery: "Our work",
+      reviews: "Reviews",
+      infos: "Practical info",
+      faq: "FAQ",
+    },
+    infos: {
+      eyebrow: "Practical info",
+      title: "The essentials before you call",
+      subtitle: "Hours, area, contact details and commitments, on a single sheet.",
+      hoursTitle: "Hours",
+      areaTitle: "Area covered",
+      areaLink: "See our service area",
+      contactTitle: "Get in touch",
+      commitmentsTitle: "Our commitments",
+    },
+  },
+  about: {
+    eyebrow: "About us",
+    title: "One team, two trades, one point of contact",
+    subtitle:
+      "Wajdi & Tayssir Services Pro works in homes across Tunis and Greater Tunis: plumbing, electrical work and repairs.",
+    storyTitle: "Who are we?",
+    story: [
+      "Wajdi & Tayssir Services Pro brings plumbing and electrical work together under one name. A leak that reaches an electrical circuit, a water heater to replace along with its dedicated line: you don't have to coordinate two tradespeople — we handle it.",
+      "We come to your home in Tunis and Greater Tunis. Every request gets a reference number, and its progress stays visible in your client area — from the first call to the end of the job.",
+    ],
+    identityTitle: "At a glance",
+    identity: {
+      company: "Company",
+      trades: "Trades",
+      area: "Area",
+      hours: "Hours",
+      phone: "Phone",
+      email: "Email",
+    },
+    tradesValue: "Plumbing · Electrical · Home repairs",
+    valuesTitle: "What guides our work",
+    values: [
+      { title: "Transparency", text: "What we find is explained before we act — even when the repair can wait." },
+      {
+        title: "Agreement before work",
+        text: "Nothing starts without your go-ahead: the price is discussed with you before the job.",
+      },
+      { title: "Careful work", text: "We leave the place clean and show you what was done." },
+      {
+        title: "Visible follow-up",
+        text: "Your request has a reference, and its status updates live in your client area.",
+      },
+    ],
+    honestyTitle: "What you won't find here",
+    honesty:
+      "No invented reviews, no inflated numbers, no labels we don't hold. This site only publishes what is true — the first proof of seriousness we can give you.",
+  },
+  zone: {
+    eyebrow: "Service area",
+    title: "We work in Tunis and Greater Tunis",
+    subtitle: "Home plumbing, electrical work and repairs in the areas below.",
+    mapTitle: "Greater Tunis",
+    mapNote: "Indicative diagram, not to scale. Coloured areas are covered.",
+    listTitle: "Areas covered",
+    cardText: "Home plumbing and electrical work",
+    cardCta: "Quote for this area",
+    servicesTitle: "What we do in these areas",
+    servicesText: "All our plumbing and electrical services are available across the whole area.",
+    notListedTitle: "Your town isn't listed?",
+    notListedText: "Call us or send your request: we'll tell you honestly whether we can come.",
+    governorates: { tunis: "Tunis", ariana: "Ariana", benArous: "Ben Arous", manouba: "Manouba" },
   },
   legal: {
     privacy: {

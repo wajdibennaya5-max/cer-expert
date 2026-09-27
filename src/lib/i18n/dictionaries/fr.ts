@@ -2,9 +2,9 @@ export const fr = {
   code: "fr",
   meta: {
     home: {
-      title: "Plombier & Électricien à domicile — Wajdi & Tayssir Services Pro",
+      title: "Plombier & Électricien à Tunis — Wajdi & Tayssir Services Pro",
       description:
-        "Dépannage plomberie et électricité à domicile : fuites, débouchage, chauffe-eau, pannes électriques, tableaux et éclairage. Intervention rapide, travail soigné. Appelez le +216 54 062 596.",
+        "Plomberie, électricité et dépannage à domicile à Tunis et dans le Grand Tunis : fuites, débouchage, chauffe-eau, pannes électriques, tableaux et éclairage. Appelez le +216 54 062 596.",
     },
     services: {
       title: "Nos services de plomberie et d'électricité",
@@ -12,7 +12,7 @@ export const fr = {
         "21 prestations de plomberie et d'électricité à domicile : réparation de fuites, débouchage, chauffe-eau, dépannage électrique, tableaux, éclairage, mise à niveau d'installation.",
     },
     request: {
-      title: "Demander une intervention",
+      title: "Demander un devis ou une intervention",
       description:
         "Décrivez votre problème en deux minutes et recevez un numéro de référence. Notre équipe vous rappelle pour confirmer le rendez-vous.",
     },
@@ -37,6 +37,16 @@ export const fr = {
       description: "Comment vos données sont collectées et utilisées.",
     },
     terms: { title: "Conditions d'utilisation", description: "Conditions d'utilisation du site et des services." },
+    about: {
+      title: "À propos — plomberie et électricité à domicile à Tunis",
+      description:
+        "Qui nous sommes, comment nous travaillons et ce à quoi nous nous engageons pour chaque intervention à domicile à Tunis et dans le Grand Tunis.",
+    },
+    zone: {
+      title: "Zone d'intervention — Tunis et Grand Tunis",
+      description:
+        "Plombier et électricien à domicile à Tunis et dans le Grand Tunis. Consultez les secteurs desservis et demandez un devis en deux minutes.",
+    },
   },
   nav: {
     home: "Accueil",
@@ -46,6 +56,8 @@ export const fr = {
     request: "Demande d'intervention",
     contact: "Contact",
     clientArea: "Espace client",
+    about: "À propos",
+    zone: "Zone d'intervention",
     menu: "Menu",
     closeMenu: "Fermer le menu",
     language: "Langue",
@@ -53,8 +65,8 @@ export const fr = {
   cta: {
     call: "Appeler",
     callNow: "Appeler maintenant",
-    request: "Demander une intervention",
-    requestShort: "Demande",
+    request: "Demander un devis",
+    requestShort: "Devis",
     assistant: "Parler à l'assistant",
     assistantShort: "Assistant",
     book: "Prendre rendez-vous",
@@ -207,9 +219,22 @@ export const fr = {
     empty: "Aucun avis publié pour le moment.",
     ratingSuffix: "sur 5",
     moderation: "Chaque avis est lu avant publication.",
+    average: "Note moyenne",
+    countOne: "1 avis publié",
+    countMany: "{n} avis publiés",
+    distribution: "Répartition des notes",
+    starsOne: "1 étoile",
+    starsMany: "{n} étoiles",
+    noneYetTitle: "Aucun avis client publié pour l'instant",
+    noneYetText:
+      "Nous préférons une page vide à des avis inventés. Vous avez fait appel à nous ? Votre avis sera parmi les premiers.",
+    samplesExcluded: "Les textes marqués « exemple » ne comptent pas dans la note.",
+    showMore: "Voir plus d'avis",
+    publishedOn: "Publié le",
+    seeAll: "Voir tous les avis",
   },
   request: {
-    title: "Demander une intervention",
+    title: "Demander un devis ou une intervention",
     subtitle: "Deux minutes suffisent. Vous recevez immédiatement un numéro de référence pour suivre votre demande.",
     sectionContact: "Vos coordonnées",
     sectionProblem: "Votre besoin",
@@ -221,6 +246,10 @@ export const fr = {
     fields: {
       name: "Nom et prénom",
       namePlaceholder: "Ex. Mohamed Ben Salah",
+      firstName: "Prénom",
+      firstNamePlaceholder: "Ex. Mohamed",
+      lastName: "Nom",
+      lastNamePlaceholder: "Ex. Ben Salah",
       phone: "Téléphone",
       phonePlaceholder: "+216 ...",
       email: "E-mail",
@@ -428,6 +457,85 @@ export const fr = {
       "L'adresse est peut-être erronée, ou la page a été déplacée. Nos services restent accessibles ci-dessous — et le téléphone répond toujours.",
     breadcrumb: "Fil d'Ariane",
     heroSceneAlt: "Schéma d'une maison : circuit d'eau et circuit électrique",
+  },
+  pro: {
+    area: "Tunis et Grand Tunis",
+    weekdaysShort: "Lun – Ven",
+    saturdayShort: "Sam",
+    summary: "Sur cette page",
+    anchors: {
+      services: "Services",
+      why: "Pourquoi nous",
+      gallery: "Réalisations",
+      reviews: "Avis",
+      infos: "Infos pratiques",
+      faq: "Questions fréquentes",
+    },
+    infos: {
+      eyebrow: "Infos pratiques",
+      title: "L'essentiel avant de nous appeler",
+      subtitle: "Horaires, secteur, contacts et engagements, réunis sur une seule fiche.",
+      hoursTitle: "Horaires",
+      areaTitle: "Secteur desservi",
+      areaLink: "Voir la zone d'intervention",
+      contactTitle: "Nous joindre",
+      commitmentsTitle: "Nos engagements",
+    },
+  },
+  about: {
+    eyebrow: "À propos",
+    title: "Une équipe, deux métiers, un seul interlocuteur",
+    subtitle:
+      "Wajdi & Tayssir Services Pro intervient à domicile à Tunis et dans le Grand Tunis, en plomberie, en électricité et en dépannage.",
+    storyTitle: "Qui sommes-nous ?",
+    story: [
+      "Wajdi & Tayssir Services Pro réunit la plomberie et l'électricité sous un même nom. Une fuite qui atteint un circuit électrique, un chauffe-eau à remplacer avec sa ligne dédiée : vous n'avez pas à coordonner deux artisans, nous nous en occupons.",
+      "Nous intervenons chez vous, à Tunis et dans le Grand Tunis. Chaque demande reçoit un numéro de référence, et son avancement reste consultable dans votre espace client — du premier appel à la fin de l'intervention.",
+    ],
+    identityTitle: "Fiche d'identité",
+    identity: {
+      company: "Entreprise",
+      trades: "Métiers",
+      area: "Secteur",
+      hours: "Horaires",
+      phone: "Téléphone",
+      email: "E-mail",
+    },
+    tradesValue: "Plomberie · Électricité · Dépannage à domicile",
+    valuesTitle: "Ce qui guide notre travail",
+    values: [
+      {
+        title: "Transparence",
+        text: "Ce qui est constaté vous est expliqué avant d'agir, y compris quand la réparation peut attendre.",
+      },
+      {
+        title: "Accord avant travaux",
+        text: "Rien n'est engagé sans votre accord : le chiffrage est discuté avec vous avant l'intervention.",
+      },
+      { title: "Travail soigné", text: "Le chantier est laissé propre, et ce qui a été fait vous est montré." },
+      {
+        title: "Suivi visible",
+        text: "Votre demande a une référence, et son statut évolue en temps réel dans votre espace client.",
+      },
+    ],
+    honestyTitle: "Ce que vous ne trouverez pas ici",
+    honesty:
+      "Pas d'avis inventés, pas de chiffres gonflés, pas de labels que nous n'avons pas. Ce site ne publie que ce qui est vrai — c'est la première preuve de sérieux que nous pouvons vous donner.",
+  },
+  zone: {
+    eyebrow: "Zone d'intervention",
+    title: "Nous intervenons à Tunis et dans le Grand Tunis",
+    subtitle: "Plomberie, électricité et dépannage à domicile, dans les secteurs ci-dessous.",
+    mapTitle: "Le Grand Tunis",
+    mapNote: "Schéma indicatif, sans échelle. Les secteurs en couleur sont desservis.",
+    listTitle: "Secteurs desservis",
+    cardText: "Plomberie et électricité à domicile",
+    cardCta: "Devis dans ce secteur",
+    servicesTitle: "Ce que nous faisons dans ces secteurs",
+    servicesText: "Toutes nos prestations de plomberie et d'électricité sont assurées sur l'ensemble du secteur.",
+    notListedTitle: "Votre ville n'est pas dans la liste ?",
+    notListedText: "Appelez-nous ou envoyez votre demande : nous vous dirons franchement si nous pouvons venir.",
+    governorates: { tunis: "Tunis", ariana: "Ariana", benArous: "Ben Arous", manouba: "La Manouba" },
   },
   legal: {
     privacy: {

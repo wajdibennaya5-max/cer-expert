@@ -44,6 +44,16 @@ export const site = {
    * services tiers.
    */
   email: process.env.NEXT_PUBLIC_CONTACT_EMAIL ?? "contact@20122011.xyz",
+  /**
+   * Seconde adresse, affichée en plus de la professionnelle à la demande du
+   * propriétaire. Toutes deux arrivent dans la même boîte : la première y est
+   * redirigée par Cloudflare.
+   *
+   * Elle n'apparaît pas dans les données structurées : les moteurs n'y
+   * attendent qu'un point de contact, et c'est l'adresse au nom du domaine qui
+   * prouve le lien entre l'entreprise et son site.
+   */
+  emailSecondary: process.env.NEXT_PUBLIC_CONTACT_EMAIL_2 ?? "wajdibennaya5@gmail.com",
   /** Pays d'exercice — aucune adresse physique n'est inventée ici. */
   country: "TN",
   countryName: "Tunisie",
@@ -64,4 +74,7 @@ export const site = {
 
 export const telHref = `tel:${site.phone.dial}`;
 export const mailHref = `mailto:${site.email}`;
+
+/** Toutes les adresses à afficher, sans doublon si les deux variables coïncident. */
+export const contactEmails: string[] = [...new Set([site.email, site.emailSecondary].filter(Boolean))];
 export const whatsappHref = `https://wa.me/${site.phone.whatsapp}`;

@@ -9,8 +9,20 @@ import { localePath, type Locale } from "@/lib/i18n/config";
 import type { Dictionary } from "@/lib/i18n/get-dictionary";
 import { telHref } from "@/lib/site";
 import { PhoneText } from "@/components/ui/phone-text";
+import { countLabel, formatAverage, type ReviewStats } from "@/lib/reviews";
 
-export function Hero({ locale, dict, areaCount }: { locale: Locale; dict: Dictionary; areaCount: number }) {
+export function Hero({
+  locale,
+  dict,
+  areaCount,
+  reviews,
+}: {
+  locale: Locale;
+  dict: Dictionary;
+  areaCount: number;
+  /** Statistiques des avis réels ; la note n'apparaît que s'il y en a. */
+  reviews?: ReviewStats;
+}) {
   const stats = [
     { value: String(services.length), label: dict.hero.stats.services },
     { value: "2", label: dict.hero.stats.trades },
@@ -37,6 +49,32 @@ export function Hero({ locale, dict, areaCount }: { locale: Locale; dict: Dictio
             </span>
             {dict.hero.badge}
           </p>
+
+          {/*
+            Qui, quoi, où : le titre dit le métier, cette ligne dit le secteur.
+            La note n'apparaît que s'il existe des avis réels — jamais calculée
+            sur les exemples de démonstration.
+          */}
+          <div className="mt-4 flex flex-wrap items-center gap-2">
+            <Link
+              href={localePath(locale, "zone-intervention")}
+              className="inline-flex items-center gap-1.5 rounded-full border border-white/12 bg-white/5 px-3.5 py-1.5 text-xs font-semibold text-white/90 transition hover:border-aqua-400/40 hover:bg-white/10"
+            >
+              <Icon name="pin" size={14} className="text-aqua-300" />
+              {dict.pro.area}
+            </Link>
+            {reviews && reviews.count > 0 ? (
+              <Link
+                href={localePath(locale, "avis")}
+                className="inline-flex items-center gap-1.5 rounded-full border border-white/12 bg-white/5 px-3.5 py-1.5 text-xs font-semibold text-white/90 transition hover:border-volt-400/40 hover:bg-white/10"
+              >
+                <Icon name="star" size={14} filled className="text-volt-300" />
+                {formatAverage(reviews.average, locale)}
+                <span className="text-slate-400">·</span>
+                {countLabel(reviews.count, dict.reviews.countOne, dict.reviews.countMany)}
+              </Link>
+            ) : null}
+          </div>
 
           <h1 className="mt-6 text-[2.1rem] font-extrabold leading-[1.06] tracking-tight text-white sm:text-5xl lg:text-[3.4rem]">
             {dict.hero.titleLine1}

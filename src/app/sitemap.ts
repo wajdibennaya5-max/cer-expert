@@ -4,7 +4,18 @@ import { locales } from "@/lib/i18n/config";
 import { site } from "@/lib/site";
 
 /** Pages publiques, dans les trois langues, avec leurs équivalents linguistiques. */
-const staticPaths = ["", "services", "demande", "realisations", "avis", "contact", "confidentialite", "conditions"];
+const staticPaths = [
+  "",
+  "services",
+  "demande",
+  "realisations",
+  "avis",
+  "a-propos",
+  "zone-intervention",
+  "contact",
+  "confidentialite",
+  "conditions",
+];
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date();
@@ -24,7 +35,14 @@ export default function sitemap(): MetadataRoute.Sitemap {
         url: `${site.url}/${locale}${path ? `/${path}` : ""}`,
         lastModified: now,
         changeFrequency: path === "" ? "weekly" : "monthly",
-        priority: path === "" ? 1 : path === "demande" || path === "services" ? 0.9 : 0.6,
+        priority:
+          path === ""
+            ? 1
+            : path === "demande" || path === "services"
+              ? 0.9
+              : path === "zone-intervention"
+                ? 0.8
+                : 0.6,
         alternates: alternates(path),
       });
     }

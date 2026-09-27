@@ -27,6 +27,7 @@ const urgencyKeys = ["emergency", "urgent", "normal", "planned"] as const;
 export function RequestForm({ locale, dict, areas }: { locale: Locale; dict: Dictionary; areas: string[] }) {
   const searchParams = useSearchParams();
   const [serviceSlug, setServiceSlug] = useState("autre");
+  const [area, setArea] = useState("");
   const [urgency, setUrgency] = useState<(typeof urgencyKeys)[number]>("normal");
   const [photos, setPhotos] = useState<Attachment[]>([]);
   const [uploading, setUploading] = useState(false);
@@ -59,7 +60,8 @@ export function RequestForm({ locale, dict, areas }: { locale: Locale; dict: Dic
     if (numero === 1) return [{ nom: "description", message: dict.request.errors.required }];
     if (numero === 3) {
       return [
-        { nom: "name", message: dict.request.errors.required },
+        { nom: "prenom", message: dict.request.errors.required },
+        { nom: "nom", message: dict.request.errors.required },
         { nom: "phone", message: dict.request.errors.required },
       ];
     }
@@ -123,7 +125,9 @@ export function RequestForm({ locale, dict, areas }: { locale: Locale; dict: Dic
   }, [status]);
   const [formError, setFormError] = useState("");
 
-  // Pré-sélection depuis une carte de service : /demande?service=chauffe-eau
+  // Pré-sélection depuis une carte de service (/demande?service=chauffe-eau)
+  // ou depuis la page des zones (/demande?zone=Ariana). Une zone inconnue de
+  // la liste configurée est ignorée plutôt qu'ajoutée.
   useEffect(() => {
     const preset = searchParams?.get("service");
     if (preset && services.some((service) => service.slug === preset)) setServiceSlug(preset);
@@ -131,7 +135,9 @@ export function RequestForm({ locale, dict, areas }: { locale: Locale; dict: Dic
     if (presetUrgency && urgencyKeys.includes(presetUrgency as (typeof urgencyKeys)[number])) {
       setUrgency(presetUrgency as (typeof urgencyKeys)[number]);
     }
-  }, [searchParams]);
+    const presetZone = searchParams?.get("zone");
+    if (presetZone && areas.includes(presetZone)) setArea(presetZone);
+  }, [searchParams, areas]);
 
   const grouped = useMemo(
     () => ({
@@ -182,8 +188,15 @@ export function RequestForm({ locale, dict, areas }: { locale: Locale; dict: Dic
     if (status === "sending") return;
 
     const form = new FormData(event.currentTarget);
+    // Prénom et nom sont saisis séparément mais partent réunis : l'API, le
+    // stockage, la console et les courriels connaissent un seul champ `name`,
+    // et il n'y a aucune raison de les modifier pour une question d'affichage.
+    const nomComplet = [form.get("prenom"), form.get("nom")]
+      .map((part) => String(part ?? "").trim())
+      .filter(Boolean)
+      .join(" ");
     const payload = {
-      name: String(form.get("name") ?? "").trim(),
+      name: nomComplet,
       phone: String(form.get("phone") ?? "").trim(),
       email: String(form.get("email") ?? "").trim(),
       serviceSlug,
@@ -206,6 +219,11 @@ export function RequestForm({ locale, dict, areas }: { locale: Locale; dict: Dic
       for (const issue of parsed.error.issues) {
         const key = issue.path.join(".") || "form";
         if (!fieldMap[key]) fieldMap[key] = issue.message;
+      }
+      // Une erreur sur `name` s'affiche sous le prénom, premier des deux champs.
+      if (fieldMap.name) {
+        fieldMap.prenom = fieldMap.name;
+        delete fieldMap.name;
       }
       setErrors(fieldMap);
       const firstKey = Object.keys(fieldMap)[0];
@@ -235,7 +253,10 @@ export function RequestForm({ locale, dict, areas }: { locale: Locale; dict: Dic
         return;
       }
       if (!response.ok || !data?.reference) {
-        if (data?.fields) setErrors(data.fields);
+        if (data?.fields) {
+          const { name: erreurNom, ...autres } = data.fields;
+          setErrors(erreurNom ? { ...autres, prenom: erreurNom } : autres);
+        }
         setStatus("error");
         setFormError(dict.request.errors.generic);
         return;
@@ -571,7 +592,13 @@ export function RequestForm({ locale, dict, areas }: { locale: Locale; dict: Dic
                 <label htmlFor="area" className={label}>
                   {dict.request.fields.area}
                 </label>
-                <select id="area" name="area" className={field} defaultValue="">
+                <select
+                  id="area"
+                  name="area"
+                  className={field}
+                  value={area}
+                  onChange={(event) => setArea(event.target.value)}
+                >
                   <option value="">{dict.request.fields.areaPlaceholder}</option>
                   {areas.map((area) => (
                     <option key={area} value={area}>
@@ -626,19 +653,34 @@ export function RequestForm({ locale, dict, areas }: { locale: Locale; dict: Dic
 
             <div className="mt-5 grid gap-5 sm:grid-cols-2">
               <div>
-                <label htmlFor="name" className={label}>
-                  {dict.request.fields.name} <span className="text-red-500">*</span>
+                <label htmlFor="prenom" className={label}>
+                  {dict.request.fields.firstName} <span className="text-red-500">*</span>
                 </label>
                 <input
-                  id="name"
-                  name="name"
+                  id="prenom"
+                  name="prenom"
                   required
-                  autoComplete="name"
-                  placeholder={dict.request.fields.namePlaceholder}
+                  autoComplete="given-name"
+                  placeholder={dict.request.fields.firstNamePlaceholder}
                   className={field}
-                  aria-invalid={Boolean(errors.name)}
+                  aria-invalid={Boolean(errors.prenom)}
                 />
-                <ErrorText name="name" />
+                <ErrorText name="prenom" />
+              </div>
+              <div>
+                <label htmlFor="nom" className={label}>
+                  {dict.request.fields.lastName} <span className="text-red-500">*</span>
+                </label>
+                <input
+                  id="nom"
+                  name="nom"
+                  required
+                  autoComplete="family-name"
+                  placeholder={dict.request.fields.lastNamePlaceholder}
+                  className={field}
+                  aria-invalid={Boolean(errors.nom)}
+                />
+                <ErrorText name="nom" />
               </div>
               <div>
                 <label htmlFor="phone" className={label}>
@@ -657,7 +699,7 @@ export function RequestForm({ locale, dict, areas }: { locale: Locale; dict: Dic
                 />
                 <ErrorText name="phone" />
               </div>
-              <div className="sm:col-span-2">
+              <div>
                 <label htmlFor="email" className={label}>
                   {dict.request.fields.email}{" "}
                   <span className="font-normal text-slate-500">({dict.request.optional})</span>

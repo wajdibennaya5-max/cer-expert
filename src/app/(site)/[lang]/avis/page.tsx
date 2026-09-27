@@ -3,12 +3,15 @@ import { notFound } from "next/navigation";
 import { Icon } from "@/components/icons";
 import { PageHeader } from "@/components/ui/page-header";
 import { Section, SectionHeading } from "@/components/ui/section";
-import { ReviewList, ModerationNote } from "@/components/reviews/review-list";
+import { ModerationNote } from "@/components/reviews/review-list";
+import { ReviewsBrowser } from "@/components/reviews/reviews-browser";
+import { ReviewSummary } from "@/components/reviews/review-summary";
 import { ReviewForm } from "@/components/reviews/review-form";
 import { Stars } from "@/components/reviews/stars";
 import { CtaBand } from "@/components/home/cta-band";
 import { getDictionary } from "@/lib/i18n/get-dictionary";
 import { isLocale, locales, type Locale } from "@/lib/i18n/config";
+import { countLabel, formatAverage, reviewDateLabel, reviewStats, sortReviews } from "@/lib/reviews";
 import { store } from "@/lib/store";
 import { localizedMetadata } from "@/lib/seo";
 
@@ -34,13 +37,12 @@ export default async function ReviewsPage({ params }: { params: Promise<{ lang: 
   if (!isLocale(lang)) notFound();
   const locale = lang as Locale;
   const dict = getDictionary(locale);
-  const reviews = await store.listPublishedReviews();
+  const reviews = sortReviews(await store.listPublishedReviews());
 
-  const average =
-    reviews.length > 0
-      ? Math.round((reviews.reduce((total, review) => total + review.rating, 0) / reviews.length) * 10) / 10
-      : 0;
+  // Les chiffres ne portent que sur les avis réels : voir `lib/reviews.ts`.
+  const stats = reviewStats(reviews);
   const hasSamples = reviews.some((review) => review.isSample);
+  const dateLabels = Object.fromEntries(reviews.map((review) => [review.id, reviewDateLabel(review, locale)]));
 
   return (
     <>
@@ -52,13 +54,15 @@ export default async function ReviewsPage({ params }: { params: Promise<{ lang: 
         subtitle={dict.reviews.subtitle}
         breadcrumb={[{ label: dict.nav.reviews }]}
       >
-        {reviews.length > 0 ? (
+        {stats.count > 0 ? (
           <div className="mt-7 inline-flex items-center gap-4 rounded-2xl border border-white/12 bg-white/5 px-5 py-3.5">
-            <span className="font-display text-3xl font-extrabold text-white">{average}</span>
+            <span className="font-display text-3xl font-extrabold text-white">
+              {formatAverage(stats.average, locale)}
+            </span>
             <span>
-              <Stars rating={Math.round(average)} size={17} />
+              <Stars rating={Math.round(stats.average)} size={17} />
               <span className="mt-1 block text-xs text-slate-400">
-                {reviews.length} {dict.nav.reviews.toLowerCase()}
+                {countLabel(stats.count, dict.reviews.countOne, dict.reviews.countMany)}
               </span>
             </span>
           </div>
@@ -67,18 +71,31 @@ export default async function ReviewsPage({ params }: { params: Promise<{ lang: 
 
       <Section tone="mist">
         <div className="container-page">
+          <ReviewSummary
+            stats={stats}
+            locale={locale}
+            dict={dict}
+            leaveHref="#laisser-un-avis"
+            showSampleNote={hasSamples}
+          />
+
           {hasSamples ? (
-            <p className="mx-auto mb-8 flex max-w-3xl items-start gap-2.5 rounded-2xl border border-mist-200 bg-white px-5 py-4 text-sm leading-relaxed text-slate-600">
-              <Icon name="alert" size={17} className="mt-0.5 shrink-0 text-slate-400" />
+            <p className="mx-auto mt-8 flex max-w-3xl items-start gap-2.5 rounded-2xl border border-mist-200 bg-white px-5 py-4 text-sm leading-relaxed text-slate-600">
+              <Icon name="alert" size={17} className="mt-0.5 shrink-0 text-slate-500" />
               {dict.reviews.sampleNote}
             </p>
           ) : null}
-          <ReviewList reviews={reviews} locale={locale} dict={dict} />
+
+          {reviews.length > 0 ? (
+            <div className="mt-10">
+              <ReviewsBrowser reviews={reviews} dateLabels={dateLabels} locale={locale} dict={dict} />
+            </div>
+          ) : null}
           <ModerationNote dict={dict} />
         </div>
       </Section>
 
-      <Section>
+      <Section id="laisser-un-avis">
         <div className="container-page">
           <SectionHeading title={dict.reviews.leaveTitle} subtitle={dict.reviews.leaveSubtitle} />
           <div className="mx-auto mt-10 max-w-2xl">

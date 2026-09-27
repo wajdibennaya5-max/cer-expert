@@ -13,7 +13,7 @@ export function AreasBand({ areas, dict }: { areas: string[]; dict: Dictionary }
   return (
     <div className="overflow-hidden border-y border-mist-200 bg-white py-4">
       <div className="flex items-center gap-4">
-        <span className="ms-5 hidden shrink-0 items-center gap-2 text-xs font-bold uppercase tracking-[0.18em] text-slate-400 sm:flex">
+        <span className="ms-5 hidden shrink-0 items-center gap-2 text-xs font-bold uppercase tracking-[0.18em] text-slate-500 sm:flex">
           <Icon name="home" size={15} />
           {dict.contact.areasTitle}
         </span>

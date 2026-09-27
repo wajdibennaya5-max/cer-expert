@@ -157,6 +157,14 @@
   html {
     scroll-behavior: smooth;
     -webkit-tap-highlight-color: transparent;
+    /* Une ancre (#avis, #infos…) doit arriver sous l'en-tête fixe, pas dessous. */
+    scroll-padding-top: 6rem;
+  }
+  @media (min-width: 1024px) {
+    html {
+      /* + le sommaire collant de l'accueil. */
+      scroll-padding-top: 8.5rem;
+    }
   }
 
   body {

@@ -120,8 +120,21 @@ export function GalleryGrid({ items, dict }: { items: GalleryItem[]; dict: Dicti
                 )}
               </span>
               <span className="block p-5">
-                <span className="inline-flex rounded-full border border-mist-200 bg-mist-50 px-2.5 py-1 text-[0.65rem] font-bold uppercase tracking-wider text-slate-500">
-                  {dict.gallery.filters[item.category]}
+                <span className="flex flex-wrap items-center gap-1.5">
+                  <span className="inline-flex rounded-full border border-mist-200 bg-mist-50 px-2.5 py-1 text-[0.65rem] font-bold uppercase tracking-wider text-slate-600">
+                    {dict.gallery.filters[item.category]}
+                  </span>
+                  {/*
+                    Une illustration vectorielle n'est pas une photo de chantier.
+                    La mention figurait déjà dans la visionneuse ; elle doit être
+                    visible dès la vignette, avant que quiconque ne la prenne
+                    pour une vraie réalisation.
+                  */}
+                  {item.kind === "illustration" || !item.mediaId ? (
+                    <span className="inline-flex rounded-full border border-aqua-200 bg-aqua-50 px-2.5 py-1 text-[0.65rem] font-bold uppercase tracking-wider text-aqua-800">
+                      {dict.gallery.illustrationNote}
+                    </span>
+                  ) : null}
                 </span>
                 <span className="mt-3 block text-base font-bold leading-snug text-ink-900">{item.title}</span>
                 {item.description ? (

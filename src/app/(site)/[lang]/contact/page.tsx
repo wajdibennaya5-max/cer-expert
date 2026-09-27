@@ -9,7 +9,7 @@ import { button } from "@/components/ui/button";
 import { AssistantTrigger } from "@/components/assistant/assistant-button";
 import { getDictionary } from "@/lib/i18n/get-dictionary";
 import { isLocale, localePath, locales, type Locale } from "@/lib/i18n/config";
-import { mailHref, site, telHref, whatsappHref } from "@/lib/site";
+import { contactEmails, mailHref, site, telHref, whatsappHref } from "@/lib/site";
 import { store } from "@/lib/store";
 import { PhoneText } from "@/components/ui/phone-text";
 import { localizedMetadata } from "@/lib/seo";
@@ -83,26 +83,56 @@ export default async function ContactPage({ params }: { params: Promise<{ lang: 
       <Section tone="mist">
         <div className="container-page">
           <div className="grid gap-5 md:grid-cols-3">
-            {channels.map((channel, index) => (
-              <Reveal key={channel.key} delay={index * 80} className="h-full">
-                <a
-                  href={channel.href}
-                  {...(channel.external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
-                  className="lift group flex h-full flex-col rounded-3xl border border-mist-200 bg-white p-7 shadow-card transition hover:shadow-card-hover"
-                >
-                  <span
-                    className={`flex h-13 w-13 items-center justify-center rounded-2xl bg-gradient-to-br ${channel.accent} text-white shadow-lg transition-transform duration-500 group-hover:scale-110`}
+            {channels.map((channel, index) =>
+              channel.key === "email" ? (
+                /*
+                  Deux adresses, donc deux liens : la carte entière ne peut plus
+                  être un seul lien, sinon la seconde adresse serait inaccessible.
+                */
+                <Reveal key={channel.key} delay={index * 80} className="h-full">
+                  <div className="flex h-full flex-col rounded-3xl border border-mist-200 bg-white p-7 shadow-card">
+                    <span
+                      className={`flex h-13 w-13 items-center justify-center rounded-2xl bg-gradient-to-br ${channel.accent} text-white shadow-lg`}
+                    >
+                      <Icon name={channel.icon} size={25} />
+                    </span>
+                    <h2 className="mt-5 text-lg font-bold text-ink-900">{channel.title}</h2>
+                    <p className="mt-2 flex-1 text-sm leading-relaxed text-slate-600">{channel.text}</p>
+                    <ul className="mt-4 space-y-2">
+                      {contactEmails.map((email) => (
+                        <li key={email}>
+                          <a
+                            href={`mailto:${email}`}
+                            className="break-all text-sm font-bold text-aqua-700 underline-offset-4 transition hover:text-aqua-800 hover:underline"
+                          >
+                            {email}
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </Reveal>
+              ) : (
+                <Reveal key={channel.key} delay={index * 80} className="h-full">
+                  <a
+                    href={channel.href}
+                    {...(channel.external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+                    className="lift group flex h-full flex-col rounded-3xl border border-mist-200 bg-white p-7 shadow-card transition hover:shadow-card-hover"
                   >
-                    <Icon name={channel.icon} size={25} />
-                  </span>
-                  <h2 className="mt-5 text-lg font-bold text-ink-900">{channel.title}</h2>
-                  <p className="mt-2 flex-1 text-sm leading-relaxed text-slate-600">{channel.text}</p>
-                  <span className="mt-4 break-all text-sm font-bold text-aqua-700 group-hover:text-aqua-800">
-                    {channel.key === "email" ? channel.value : <PhoneText value={channel.value} />}
-                  </span>
-                </a>
-              </Reveal>
-            ))}
+                    <span
+                      className={`flex h-13 w-13 items-center justify-center rounded-2xl bg-gradient-to-br ${channel.accent} text-white shadow-lg transition-transform duration-500 group-hover:scale-110`}
+                    >
+                      <Icon name={channel.icon} size={25} />
+                    </span>
+                    <h2 className="mt-5 text-lg font-bold text-ink-900">{channel.title}</h2>
+                    <p className="mt-2 flex-1 text-sm leading-relaxed text-slate-600">{channel.text}</p>
+                    <span className="mt-4 break-all text-sm font-bold text-aqua-700 group-hover:text-aqua-800">
+                      <PhoneText value={channel.value} />
+                    </span>
+                  </a>
+                </Reveal>
+              ),
+            )}
           </div>
 
           <div className="mt-6 grid gap-5 lg:grid-cols-3">
@@ -134,11 +164,15 @@ export default async function ContactPage({ params }: { params: Promise<{ lang: 
                 <dl className="mt-4 space-y-2.5 text-sm">
                   <div className="flex justify-between gap-4">
                     <dt className="text-slate-600">{dict.contact.weekdays}</dt>
-                    <dd className="font-semibold text-ink-900">{site.hours.weekdays}</dd>
+                    <dd className="font-semibold text-ink-900">
+                      <bdi dir="ltr">{site.hours.weekdays}</bdi>
+                    </dd>
                   </div>
                   <div className="flex justify-between gap-4">
                     <dt className="text-slate-600">{dict.contact.saturday}</dt>
-                    <dd className="font-semibold text-ink-900">{site.hours.saturday}</dd>
+                    <dd className="font-semibold text-ink-900">
+                      <bdi dir="ltr">{site.hours.saturday}</bdi>
+                    </dd>
                   </div>
                   <div className="flex justify-between gap-4">
                     <dt className="text-slate-600">{dict.contact.sunday}</dt>
@@ -166,6 +200,13 @@ export default async function ContactPage({ params }: { params: Promise<{ lang: 
                   </li>
                 ))}
               </ul>
+              <Link
+                href={localePath(locale, "zone-intervention")}
+                className="mt-5 inline-flex items-center gap-2 text-sm font-bold text-aqua-700 transition hover:text-aqua-800"
+              >
+                {dict.pro.infos.areaLink}
+                <Icon name="arrowRight" size={15} className="rtl:rotate-180" />
+              </Link>
             </div>
           </Reveal>
         </div>

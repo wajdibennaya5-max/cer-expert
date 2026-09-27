@@ -15,10 +15,13 @@ export function LanguageSwitcher({
   locale,
   label,
   compact = false,
+  small = false,
 }: {
   locale: Locale;
   label: string;
   compact?: boolean;
+  /** Version basse, pour la barre d'informations au-dessus de la navigation. */
+  small?: boolean;
 }) {
   const pathname = usePathname() ?? `/${locale}`;
   const [open, setOpen] = useState(false);
@@ -57,9 +60,9 @@ export function LanguageSwitcher({
         aria-haspopup="listbox"
         aria-expanded={open}
         aria-label={label}
-        className={`inline-flex h-10 items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 text-sm font-semibold text-white/90 transition hover:bg-white/12 ${
-          compact ? "" : "min-w-[5.5rem]"
-        }`}
+        className={`inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 font-semibold text-white/90 transition hover:bg-white/12 ${
+          small ? "h-7 px-2.5 text-xs" : "h-10 px-3 text-sm"
+        } ${compact || small ? "" : "min-w-[5.5rem]"}`}
       >
         <Icon name="globe" size={17} className="opacity-80" />
         <span className="uppercase">{locale}</span>

@@ -38,7 +38,7 @@ export default async function AdminCalendarPage({ searchParams }: { searchParams
 
   const firstDay = new Date(year!, month! - 1, 1);
   const daysInMonth = new Date(year!, month!, 0).getDate();
-  // Lundi = 0 : la semaine commence le lundi, comme en Tunisie et en France.
+  // Lundi = 0 : la semaine commence le lundi, comme en Tunisie.
   const offset = (firstDay.getDay() + 6) % 7;
 
   const cells: (number | null)[] = [

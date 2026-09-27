@@ -12,7 +12,7 @@ export function GalleryPreview({ items, locale, dict }: { items: GalleryItem[]; 
   if (items.length === 0) return null;
 
   return (
-    <Section>
+    <Section id="realisations">
       <div className="container-page">
         <SectionHeading eyebrow={dict.nav.gallery} title={dict.gallery.title} subtitle={dict.gallery.subtitle} />
 
@@ -42,8 +42,15 @@ export function GalleryPreview({ items, locale, dict }: { items: GalleryItem[]; 
                   )}
                 </span>
                 <span className="block p-5">
-                  <span className="inline-flex rounded-full border border-mist-200 bg-mist-50 px-2.5 py-1 text-[0.65rem] font-bold uppercase tracking-wider text-slate-500">
-                    {dict.gallery.filters[item.category]}
+                  <span className="flex flex-wrap items-center gap-1.5">
+                    <span className="inline-flex rounded-full border border-mist-200 bg-mist-50 px-2.5 py-1 text-[0.65rem] font-bold uppercase tracking-wider text-slate-600">
+                      {dict.gallery.filters[item.category]}
+                    </span>
+                    {item.kind === "illustration" || !item.mediaId ? (
+                      <span className="inline-flex rounded-full border border-aqua-200 bg-aqua-50 px-2.5 py-1 text-[0.65rem] font-bold uppercase tracking-wider text-aqua-800">
+                        {dict.gallery.illustrationNote}
+                      </span>
+                    ) : null}
                   </span>
                   <span className="mt-3 block text-base font-bold leading-snug text-ink-900">{item.title}</span>
                 </span>
