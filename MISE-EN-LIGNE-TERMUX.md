@@ -469,6 +469,45 @@ Sans restriction**. Et laissez le téléphone branché.
 L'application **Termux:Boot** (F-Droid également) permet de relancer le site
 automatiquement au redémarrage du téléphone.
 
+### Le gardien : relancer sans être devant
+
+Ces réglages réduisent les mises en veille, ils ne les suppriment pas. Quand
+Android gèle quand même Termux, le tunnel perd ses connexions et Cloudflare
+répond **1033** à tous les visiteurs — parfois pendant des heures, sans que
+personne s'en aperçoive.
+
+```bash
+bash scripts/veilleur.sh demarrer
+```
+
+Le gardien interroge l'adresse **publique** toutes les deux minutes et relance
+le site et le tunnel après **deux échecs de suite**. Deux, et pas un : une
+requête isolée échoue parfois parce que le réseau mobile a hoqueté, et relancer
+pour ça couperait le site une minute pour rien.
+
+```bash
+bash scripts/veilleur.sh etat      # tourne-t-il, et qu'a-t-il vu ?
+bash scripts/veilleur.sh arreter
+```
+
+Son journal ne dit que ce qui s'est passé, jamais ce qu'il espérait :
+
+```
+18:28:38  ⚠ HTTP 000 (échec 1/2).
+18:28:43  ⚠ HTTP 000 (échec 2/2).
+18:28:43  → Relance du site et du tunnel…
+18:28:45  ✓ Site de nouveau en ligne.
+```
+
+Si la relance échoue, la dernière ligne le dit aussi (`✗ Toujours injoignable`).
+
+> Il surveille l'adresse publique, pas `localhost` : un site qui répond sur le
+> téléphone mais dont le tunnel est tombé est hors ligne pour tout le monde
+> sauf pour son propriétaire.
+>
+> Et il ne remplace pas un hébergement : il raccourcit les pannes, il ne les
+> empêche pas. Le téléphone éteint, le gardien l'est aussi.
+
 ---
 
 ## Étape 9 — Que le site survive à l'extinction du téléphone
@@ -629,7 +668,7 @@ Trois lignes, et une seule session suffit :
 ```bash
 termux-wake-lock
 proot-distro login ubuntu
-cd ~/wajdi-tayssir && bash scripts/demarrer.sh
+cd ~/wajdi-tayssir && bash scripts/demarrer.sh && bash scripts/veilleur.sh demarrer
 ```
 
 `demarrer.sh` remplace de lui-même un serveur lancé avant la dernière
