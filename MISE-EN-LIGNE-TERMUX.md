@@ -546,10 +546,15 @@ les bonnes directives — `s-maxage=60` pour une page fraîche en une minute,
 Depuis le téléphone, une fois le site en ligne :
 
 ```bash
-curl -sI https://votre-domaine/fr | grep -i cf-cache-status
-curl -sI https://votre-domaine/fr | grep -i cf-cache-status
-curl -sI https://votre-domaine/admin/login | grep -i cf-cache-status
+curl -s -o /dev/null -D - https://votre-domaine/fr | grep -i cf-cache-status
+curl -s -o /dev/null -D - https://votre-domaine/fr | grep -i cf-cache-status
+curl -s -o /dev/null -D - https://votre-domaine/admin/login | grep -i cf-cache-status
 ```
+
+`-o /dev/null` jette la page, `-D -` affiche les en-têtes. Il faut une vraie
+requête GET : `curl -I` enverrait une requête HEAD, que Cloudflare ne met pas
+en cache et qu'il n'annote donc pas — la commande ne renvoie alors rien du
+tout, et on croit à tort que la règle ne marche pas.
 
 | Ligne | Attendu | Signification |
 | --- | --- | --- |
